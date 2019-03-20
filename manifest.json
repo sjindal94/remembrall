@@ -1,12 +1,14 @@
 {
-  "name": "Rememberall - Password manager with hightened senses",
+  "name": "Remembrall - Password manager with hightened senses",
   "version": "1.0",
   "description": "Chrome extension for a password manager that warns user for password reuse, phishing attacks, and malicious links.",
   "manifest_version": 2,
+  "author": "Shubham Jindal, Shivasagar, Anirudh",
+  "homepage_url": "https://github.com/sjindal94/rememberall",
   "browser_action": {
-    "default_title": "Click to set behaviour of Rememberall",
+    "default_title": "Click to set behaviour of Remembrall",
     "default_popup": "extension_popup.html",
-    "default_icon": "icon/remembrallon_128x128.png"
+    "default_icon": "icon/remembralloff_128x128.png"
   },
   "background": {
     "scripts": [

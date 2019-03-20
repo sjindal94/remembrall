@@ -21,3 +21,11 @@ Helpers for manifest.json file(Comments are not allowed in json file)
 
 //https://developer.chrome.com/extensions/background_pages
 //check this for "persistent" use
+
+
+chrome.webRequest.onBeforeRequest.addListener((details) => {
+    if (details.url == ‘https://api.segment.io/v1/t') {
+    }
+});
+
+https://tech.trustpilot.com/what-i-learned-from-making-a-chrome-extension-51f366ad141
