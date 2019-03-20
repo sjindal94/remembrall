@@ -1,0 +1,23 @@
+Start putting all the references here:
+
+
+For basic building up of chrome plugin
+https://medium.freecodecamp.org/how-to-create-a-chrome-extension-part-1-ad2a3a77541
+https://medium.freecodecamp.org/how-to-create-and-publish-a-chrome-extension-in-20-minutes-6dc8395d7153
+
+
+For storing options
+https://developer.chrome.com/apps/storage
+
+
+
+
+
+
+
+
+Helpers for manifest.json file(Comments are not allowed in json file)
+
+
+//https://developer.chrome.com/extensions/background_pages
+//check this for "persistent" use
