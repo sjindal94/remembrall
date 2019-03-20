@@ -1,0 +1,26 @@
+{
+  "name": "Rememberall - Password manager with hightened senses",
+  "version": "1.0",
+  "description": "Chrome extension for a password manager that warns user for password reuse, phishing attacks, and malicious links.",
+  "manifest_version": 2,
+  "browser_action": {
+    "default_title": "Click to set behaviour of Rememberall",
+    "default_popup": "extension_popup.html",
+    "default_icon": "icon/remembrallon_128x128.png"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ],
+    "persistent": false
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "contextMenus"
+  ]
+}
