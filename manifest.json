@@ -4,7 +4,7 @@
   "description": "Chrome extension for a password manager that warns user for password reuse, phishing attacks, and malicious links.",
   "manifest_version": 2,
   "author": "Shubham Jindal, Shivasagar, Anirudh",
-  "homepage_url": "https://github.com/sjindal94/rememberall",
+  "homepage_url": "https://github.com/sjindal94/remembrall",
   "browser_action": {
     "default_title": "Click to set behaviour of Remembrall",
     "default_popup": "extension_popup.html",
@@ -20,11 +20,18 @@
     "page": "options.html",
     "open_in_tab": false
   },
-  "content_scripts": [{
-    "matches": ["<all_urls>"],
-    "js": ["js/jquery.min.js","js/content.js"],
-    "run_at": "document_end"
-  }],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
   "permissions": [
     "tabs",
     "storage",

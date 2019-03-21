@@ -33,7 +33,7 @@ function checkForPassword(request, sender, sendMessage) {
     //check if tab.title has login word
     //check if tab.url has login word
     var inputs = document.getElementsByTagName("input");
-    for (var i=0; i<inputs.length; i++) {
+    for (var i = 0; i < inputs.length; i++) {
         if (inputs[i].type.toLowerCase() === "password") {
             ele.push(inputs[i]);
             return sendMessage(true);
@@ -72,17 +72,17 @@ function checkForPassword(request, sender, sendMessage) {
  *      - Apple
  */
 
-var extraStrings = ['name','gender','sex','number','age','birthday'],
-    signupStrings = ['signup','create account','register','sign up']
-    buttonStrings = ['signup','create account','register','sign up','join'];
+var extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
+    signupStrings = ['signup', 'create account', 'register', 'sign up'];
+buttonStrings = ['signup', 'create account', 'register', 'sign up', 'join'];
 
-var regexExt = new RegExp(extraStrings.join( "|" ), "i"),
-    regex = new RegExp(signupStrings.join( "|" ), "i"),
-    regexBut = new RegExp(buttonStrings.join( "|" ), "i");
+var regexExt = new RegExp(extraStrings.join("|"), "i"),
+    regex = new RegExp(signupStrings.join("|"), "i"),
+    regexBut = new RegExp(buttonStrings.join("|"), "i");
 
-var checkForSignup = function() {    
+var checkForSignup = function () {
     var formsList = document.getElementsByTagName('form');
-    for(let i = 0, len = formsList.length; i < len; i++) {
+    for (let i = 0, len = formsList.length; i < len; i++) {
         var form = formsList[i];
         var method = form.method,
             id = form.id,
@@ -96,8 +96,8 @@ var checkForSignup = function() {
             containsExtra = false;
         var signup_form;
 
-        if(method == 'post' || method == 'get') {
-            if(regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
+        if (method == 'post' || method == 'get') {
+            if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
                 console.log("Page contains signup in id, action, name or classname");
                 signup_form = form;
                 break;
@@ -110,16 +110,16 @@ var checkForSignup = function() {
                     if (type === "submit" && (regexBut.test(element.innerHTML) || regexBut.test(element.value))) {
                         console.log("Page contains signup. Button label : " + element.innerHTML);
                         signup_form = form;
-                        break;        
+                        break;
                     }
                     if (type === "email" || fieldName.includes("email") || fieldName.includes("id") || className.includes("email")) {
                         console.log("Contains Email/userid");
                         containsEmail = true;
-                    } 
+                    }
                     if (type === "password") {
                         console.log("Contains Password");
                         containsPass = true;
-                    } 
+                    }
                     if (regexExt.test(fieldName)) {
                         console.log("Contains " + fieldName);
                         containsExtra = true;
@@ -129,7 +129,7 @@ var checkForSignup = function() {
                         containsSelect = true;
                     }
                 }
-                if(containsEmail && containsPass && (containsExtra || containsSelect)) {
+                if (containsEmail && containsPass && (containsExtra || containsSelect)) {
                     console.log("Page contains signup");
                     signup_form = form;
                     break;
@@ -137,6 +137,6 @@ var checkForSignup = function() {
             }
         }
     }
-}
+};
 
 checkForSignup();
