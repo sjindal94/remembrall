@@ -9,7 +9,8 @@ https://medium.freecodecamp.org/how-to-create-and-publish-a-chrome-extension-in-
 For storing options
 https://developer.chrome.com/apps/storage
 
-
+For parsing tab page dom
+https://www.thepolyglotdeveloper.com/2018/09/creating-basic-chrome-extension/
 
 
 

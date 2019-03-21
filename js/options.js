@@ -28,5 +28,9 @@ function restore_options() {
 
 
 document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click',
-    save_options);
+// Run our script as soon as the document's DOM is ready.
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('save').addEventListener('click',
+        save_options);
+});
+
