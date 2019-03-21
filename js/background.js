@@ -4,13 +4,18 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (IS_ON && changeInfo.status == 'complete' && tab.active) {
         var allLinks = document.links;
         for (var i = 0; i < allLinks.length; i++) {
-            console.log(allLinks[i].href);
-            alert(allLinks[i].href);
+            console.log("Link "+ i + ": " + allLinks[i].href);
         }
         chrome.tabs.getSelected(null, function (tab) {
-            alert(tab.url);
+            console.log("URL: "+ tab.url);
         });
 
+        chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, { action: "checkForPassword" }, function (response) {
+                alert(response);
+            });
+
+        });
     }
 });
 
@@ -35,7 +40,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 "from a content script:" + sender.tab.url :
                 "from the extension");
 
-            console.log(request.data);
             IS_ON = request.data;
             sendResponse({result: 'success'});
             break;
