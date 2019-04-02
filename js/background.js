@@ -15,7 +15,9 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
             chrome.tabs.sendMessage(tabs[0].id, {action: "checkForPassword"}, function (response) {
                 alert(response);
             });
-
+            chrome.tabs.sendMessage(tabs[0].id, {action: "validateURL"}, function (response) {
+                alert(response);
+            });
         });
     }
 });
@@ -62,7 +64,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 }, ["blocking"]);
                 console.log("Request stopped");
             } else {
-                // Store email, password and domain in the database 
+                // Store email, password and domain in the database
             }
             break;
     }
