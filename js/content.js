@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(
 
  function validateURL(request, sender, sendMessage) {
 
-    var Urls = ['www.twilio.com', 'www.reddit.com','www.instagram.com','stackoverflow.com','www.google.com', 'www.amazon.com', 'www.facebook.com', 'www.microsoft.com', 'www.github.com'];
+    var Urls = ['www.twilio.com', 'www.reddit.com','www.instagram.com','stackoverflow.com','www.google.com', 'www.amazon.com', 'www.facebook.com', 'www.microsoft.com', 'github.com'];
     console.log(location.href);
     console.log(location.hostname);
     var domain = location.hostname;
