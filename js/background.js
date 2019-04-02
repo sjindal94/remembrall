@@ -67,6 +67,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 // Store email, password and domain in the database
             }
             break;
+        case 'dialog':
+            console.log("Dialog message");
+            chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
+            break;
     }
     return true;
 });
