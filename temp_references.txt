@@ -4,6 +4,8 @@ Start putting all the references here:
 For basic building up of chrome plugin
 https://medium.freecodecamp.org/how-to-create-a-chrome-extension-part-1-ad2a3a77541
 https://medium.freecodecamp.org/how-to-create-and-publish-a-chrome-extension-in-20-minutes-6dc8395d7153
+https://blog.hartleybrody.com/chrome-extension/
+https://developer.chrome.com/extensions/overview#arch
 
 
 For storing options
@@ -12,6 +14,17 @@ https://developer.chrome.com/apps/storage
 For parsing tab page dom
 https://www.thepolyglotdeveloper.com/2018/09/creating-basic-chrome-extension/
 
+
+
+
+
+
+
+Extras
+Add helper page for first time users
+https://stackoverflow.com/questions/5745822/open-a-help-page-after-chrome-extension-is-installed-first-time
+
+Use omnibox
 
 
 
@@ -30,3 +43,12 @@ chrome.webRequest.onBeforeRequest.addListener((details) => {
 });
 
 https://tech.trustpilot.com/what-i-learned-from-making-a-chrome-extension-51f366ad141
+
+
+
+
+Design Decisions for report:
+
+The next step is to figure out whether your extension makes more sense as a browser action or a page action. The main difference is how they appear in the browser’s UI:
+Browser Actions are permanently displayed to the right of the address bar. These are good if your extension can work on any website, or if the extension is website agnostic. This is probably the right option for most extensions.
+So we choose Browser action

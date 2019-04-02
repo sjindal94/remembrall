@@ -33,7 +33,7 @@ function checkForPassword(request, sender, sendMessage) {
     //check if tab.title has login word
     //check if tab.url has login word
     var inputs = document.getElementsByTagName("input");
-    for (var i=0; i<inputs.length; i++) {
+    for (var i = 0; i < inputs.length; i++) {
         if (inputs[i].type.toLowerCase() === "password") {
             ele.push(inputs[i]);
             return sendMessage(true);
@@ -72,13 +72,62 @@ function checkForPassword(request, sender, sendMessage) {
  *      - Apple
  */
 
-var extraStrings = ['name','gender','sex','number','age','birthday'],
-    signupStrings = ['signup','create account','register','sign up']
-    buttonStrings = ['signup','create account','register','sign up','join'];
+var extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
+    signupStrings = ['signup', 'create account', 'register', 'sign up'],
+    buttonStrings = ['signup', 'create account', 'register', 'sign up', 'join'];
 
-var regexExt = new RegExp(extraStrings.join( "|" ), "i"),
-    regex = new RegExp(signupStrings.join( "|" ), "i"),
-    regexBut = new RegExp(buttonStrings.join( "|" ), "i");
+var regexExt = new RegExp(extraStrings.join("|"), "i"),
+    regex = new RegExp(signupStrings.join("|"), "i"),
+    regexBut = new RegExp(buttonStrings.join("|"), "i");
+
+var signup_form = null; 
+
+/* 
+ * Sample code to make use of PouchDB   
+ */
+const db = new PouchDB('vault');
+
+var doc = {
+    "_id": "1",
+    "url": "www.facebook.com",
+    "hash": "password123"
+};
+function initDocs(text) {
+    db.put(doc, function callback(err, result) {
+        if (!err) {
+            console.log('Successfully posted a todo!');
+        }
+    });
+}
+
+function listDocs() {
+    db.allDocs({include_docs: true, descending: true}, function(err, doc) {
+        console.log(doc.rows[0].doc);
+    });
+}  
+
+initDocs();
+listDocs();
+/**********************************************************************************/
+
+var monitorForm = function() {
+    $(signup_form).submit(function(event) {
+        console.log('submitting form');
+        var form_data = {};
+        var password;
+        for(var i = 0; i < this.elements.length; i++) {
+            var name = this.elements[i].name;
+            var type = this.elements[i].type;
+            var value = this.elements[i].value;
+            console.log(name + " " + value + " " + type);
+            if(type && type.toLowerCase() === "password")
+                password = this.elements[i].value;
+            if(name && type.toLowerCase() !== "hidden")
+                form_data[name] = value;
+        }
+        chrome.extension.sendMessage({type: "store", data: form_data, password: password}, $.noop);
+    });
+}
 
 var checkForSignup = function() {    
     var formsList = document.getElementsByTagName('form');
@@ -94,7 +143,6 @@ var checkForSignup = function() {
             containsPass = false,
             containsSelect = false,
             containsExtra = false;
-        var signup_form;
 
         if(method == 'post' || method == 'get') {
             if(regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
@@ -113,19 +161,19 @@ var checkForSignup = function() {
                         break;        
                     }
                     if (type === "email" || fieldName.includes("email") || fieldName.includes("id") || className.includes("email")) {
-                        console.log("Contains Email/userid");
+                        // console.log("Contains Email/userid");
                         containsEmail = true;
                     } 
                     if (type === "password") {
-                        console.log("Contains Password");
+                        // console.log("Contains Password");
                         containsPass = true;
                     } 
                     if (regexExt.test(fieldName)) {
-                        console.log("Contains " + fieldName);
+                        // console.log("Contains " + fieldName);
                         containsExtra = true;
                     }
                     if (type === "select") {
-                        console.log("Contains Select");
+                        // console.log("Contains Select");
                         containsSelect = true;
                     }
                 }
@@ -137,6 +185,6 @@ var checkForSignup = function() {
             }
         }
     }
+    if(signup_form !== null) monitorForm();
 }
-
 checkForSignup();
