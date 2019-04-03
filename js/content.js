@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(
 
  function validateURL(request, sender, sendMessage) {
 
-    var Urls = ['stackoverflow.com','www.google.com', 'www.amazon.com', 'www.facebook.com', 'www.microsoft.com', 'www.github.com'];
+    var Urls = ['www.twilio.com', 'www.reddit.com','www.instagram.com','stackoverflow.com','www.google.com', 'www.amazon.com', 'www.facebook.com', 'www.microsoft.com', 'github.com'];
     console.log(location.href);
     console.log(location.hostname);
     var domain = location.hostname;
@@ -36,8 +36,9 @@ chrome.runtime.onMessage.addListener(
      }
 
      if (flag === 0) {
-         console.log("TODO popUp");
+         console.log("popUp");
          //chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
+         chrome.extension.sendMessage({type: "dialog"}, $.noop);
      }
 
     console.log("EOF ValidateURL");
