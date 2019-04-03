@@ -62,6 +62,12 @@ document.addEventListener("DOMContentLoaded", function () {
         destroyDB();
     });
 
+    var infoDBButton = document.getElementById('infoDB');
+    infoDBButton.addEventListener('click', () => {
+        console.log("Info DB");
+        getDbInfo();
+    });
+
     //Initialize with previous set value
     chrome.storage.sync.get("is_on", function (data) {
         if (data.is_on) {
