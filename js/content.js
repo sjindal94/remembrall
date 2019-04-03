@@ -13,7 +13,15 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-
+/*
+ * validateURL() - verifys the URL against the list of Certified URLs (Alexa 10K Websites) provides user options to 
+ *                  -Dismiss Now (Alert user again)
+ *                  -Dismiss Forever (Add this URL to list of Certified URLs)
+ * 
+ * Presently it is a static list of URLs where the user clicked URL will be verified 
+ * and the options to dismiss/dismissForever is provided.
+ *    
+ */
 function validateURL(request, sender, sendMessage) {
 
     var Urls = getUrls();
@@ -38,6 +46,8 @@ function validateURL(request, sender, sendMessage) {
 
     console.log("EOF ValidateURL");
 }
+
+validateURL();
 
 /*
  * Rules to identify a signup page :
