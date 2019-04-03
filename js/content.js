@@ -6,10 +6,10 @@ chrome.runtime.onMessage.addListener(
             // this is required to use sendResponse asynchronously
             return true;
         }
-        if (request.action === "validateURL") {
-            validateURL(request, sender, sendMessage);
-            return true;
-        }
+        // if (request.action === "validateURL") {
+        //     validateURL(request, sender, sendMessage);
+        //     return true;
+        // }
     }
 );
 
