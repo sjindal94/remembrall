@@ -40,7 +40,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 IS_ON = data.is_on;
                 sendResponse({result: 'Backgroung set value to ' + IS_ON});
             });
-            initDBForTest();
             break;
         case 'create_db':
             createDB();
@@ -90,6 +89,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 // Run our script as soon as the document's DOM is ready.
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Background loaded");
+    createDB();
 });
 
 

@@ -57,7 +57,6 @@ function writeDoc(doc) {
         } else {
             console.log(response);
             console.log("Document created Successfully");
-            readDoc("1");
         }
     });
 }
@@ -100,13 +99,12 @@ function destroyDB(){
         if (err) {
             return console.log(err);
         } else {
+            pouchDb = null;
             console.log(response);
             console.log("Database Deleted");
         }
     });
 }
-
-createDB();
 /*
 Incase we save address, contact cards , secret files images etc
 //Adding attachment to a document

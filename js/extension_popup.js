@@ -99,6 +99,10 @@ chrome.runtime.onInstalled.addListener(function (details) {
     }
 });
 
+//may delete db onSuspend of runtime
+//also check how and why to convert background pageinto an event page
+
+
 //
 // // Add listener to receive messages from background page
 // chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
