@@ -1,18 +1,3 @@
-// listen for checkForWord request, call getTags which includes callback to sendResponse
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendMessage) {
-        if (request.action === "checkForSignup") {
-            checkForSignup(request, sender, sendMessage);
-            // this is required to use sendResponse asynchronously
-            return true;
-        }
-        // if (request.action === "validateURL") {
-        //     validateURL(request, sender, sendMessage);
-        //     return true;
-        // }
-    }
-);
-
 /*
  * validateURL() - verifys the URL against the list of Certified URLs (Alexa 10K Websites) provides user options to 
  *                  -Dismiss Now (Alert user again)
@@ -51,8 +36,7 @@ function validateURL(request, sender, sendMessage) {
 
 /*
  * Rules to identify a signup page :
- * 1. The window.location has signup in its path
- * 2. There exists a form element in the html dom with
+ * 1. There exists a form element in the html dom with
  *      a. method == post
  *           i. action, id, or name containing words like ['signup']
  *          ii. form containing button type = 'submit' with value or name in ['signup','create','create account','register']

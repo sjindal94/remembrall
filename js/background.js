@@ -12,7 +12,6 @@ var isDupePassword = function(password) {
     }).catch(function (err) {
         console.log("ouch, an error");
     });
-    return true;
 };
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
