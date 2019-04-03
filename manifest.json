@@ -3,6 +3,7 @@
   "version": "1.0",
   "description": "Chrome extension for a password manager that warns user for password reuse, phishing attacks, and malicious links.",
   "manifest_version": 2,
+  "minimum_chrome_version": "50",
   "author": "Shubham Jindal, Shivasagar, Anirudh",
   "homepage_url": "https://github.com/sjindal94/remembrall",
   "browser_action": {
@@ -12,9 +13,11 @@
   },
   "background": {
     "scripts": [
+      "js/pouchdb-7.0.0.min.js",
+      "js/db_store.js",
       "js/background.js"
     ],
-    "persistent": false
+    "persistent": true
   },
   "options_ui": {
     "page": "options.html",
@@ -27,7 +30,6 @@
       ],
       "js": [
         "js/jquery.min.js",
-        "js/pouchdb-7.0.0.min.js",
         "js/content.js"
       ],
       "run_at": "document_end"
@@ -36,6 +38,9 @@
   "permissions": [
     "tabs",
     "storage",
-    "contextMenus"
+    "contextMenus",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
   ]
 }

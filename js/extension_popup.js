@@ -44,6 +44,12 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("CLEAR CACHE: Cache cleared");
     });
 
+    var getDBDataButton = document.getElementById('getDBData');
+    getDBDataButton.addEventListener('click', () => {
+        console.log("Current DB data");
+        readAllDocs();
+    });
+
     //Initialize with previous set value
     chrome.storage.sync.get("is_on", function (data) {
         console.log(data);

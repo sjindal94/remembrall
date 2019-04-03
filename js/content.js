@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener(
  }
 
 //Returns the index of the first instance of the desired word on the page.
-// function checkForWord(request, sender, sendResponse){
+// function checkForW   ord(request, sender, sendResponse){
 //     var scripts = document.getElementsByTagName("script");
 //     for (var i=0;i<scripts.length;i++) {
 //         if (scripts[i].src.toLowerCase().indexOf("jquery")>-1){
@@ -56,7 +56,7 @@ chrome.runtime.onMessage.addListener(
 
 
 function checkForPassword(request, sender, sendMessage) {
-    console.log("Getting password inputs");
+    console.log("checkForPassword");
     var ele = [];
 
     //check if tab.title has login word
@@ -111,34 +111,6 @@ var regexExt = new RegExp(extraStrings.join("|"), "i"),
 
 var signup_form = null;
 
-/*
- * Sample code to make use of PouchDB
- */
-const db = new PouchDB('vault');
-
-var doc = {
-    "_id": "1",
-    "url": "www.facebook.com",
-    "hash": "password123"
-};
-function initDocs(text) {
-    db.put(doc, function callback(err, result) {
-        if (!err) {
-            console.log('Successfully posted a todo!');
-        }
-    });
-}
-
-function listDocs() {
-    db.allDocs({include_docs: true, descending: true}, function(err, doc) {
-        console.log(doc.rows[0].doc);
-    });
-}
-
-initDocs();
-listDocs();
-/**********************************************************************************/
-
 var monitorForm = function() {
     $(signup_form).submit(function(event) {
         console.log('submitting form');
@@ -154,7 +126,8 @@ var monitorForm = function() {
             if(name && type.toLowerCase() !== "hidden")
                 form_data[name] = value;
         }
-        chrome.extension.sendMessage({type: "store", data: form_data, password: password}, $.noop);
+        console.log("Validating password");
+        chrome.extension.sendMessage({type: "validate_password", data: form_data, password: password}, $.noop);
     });
 }
 
