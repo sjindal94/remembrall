@@ -47,7 +47,7 @@ function validateURL(request, sender, sendMessage) {
     console.log("EOF ValidateURL");
 }
 
-validateURL();
+// validateURL();
 
 /*
  * Rules to identify a signup page :
