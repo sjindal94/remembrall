@@ -1,5 +1,15 @@
 var IS_ON = false;
-const used_passwords = new Set(['password123', 'password321', 'qwerty', 'terster1']);
+const used_passwords = new Set(['password123','password321','qwerty','terster1']);
+
+var isDupePassword = function(password) {
+    console.log("In isDupePassword");
+    count = pouchDb.find({
+        selector: {
+            password: {$eq: password}
+        }
+    }).length;
+    return (count > 0);
+}
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (IS_ON && changeInfo.status == 'complete' && tab.active) {
@@ -12,9 +22,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         });
 
         chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {action: "checkForPassword"}, function (response) {
-                //alert(response);
-            });
             chrome.tabs.sendMessage(tabs[0].id, {action: "validateURL"}, function (response) {
                 //alert(response);
             });
@@ -37,18 +44,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             initDBForTest();
             break;
         case 'validate_password':
-            var dbEntry = {
-                "_id": "1",
-                "url": sender.tab.url,
-                "user_data": request.data,
-                //"password": hashString(request.password)
-                "password": request.password
-            };
-            writeDoc(dbEntry);
-            readAllDocs();
-            if (used_passwords.has(data.password)) {
+            console.log(request);
+            console.log("PASSWORD : " + request.password);
+            if(isDupePassword(request.password)) {
                 alert("Already in Use! Choose a different password");
-                chrome.webRequest.onBeforeRequest.addListener(function (details) {
+                chrome.webRequest.onBeforeRequest.addListener(function(details) {
                     console.log("In callback");
                     return {cancel: true};
                 }, {
@@ -58,18 +58,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     tabId: sender.tab.id
                 }, ["blocking"]);
                 console.log("Request stopped");
-
+            
             } else {
-                // Store email, password and domain in the database
-                var doc = {
-                    "_id": "1",
-                    "url": data.url,
-                    "username": data.data,
-                    "password": data.password
-                };
-
-                writeDoc(doc);
-                readAllDocs();
+                    var doc = {
+                        "_id"       :   "1",
+                        "url"       :   sender.tab.url,
+                        "userid"    :   request.data,
+                        "password"  :   request.password
+                    };
+                    writeDoc(doc);
+                    readAllDocs();
             }
             break;
         case 'dialog':

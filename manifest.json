@@ -15,6 +15,7 @@
     "scripts": [
       "js/pouchdb-7.0.0.min.js",
       "js/utils.js",
+      "js/pouchdb.find.js",
       "js/db_store.js",
       "js/background.js"
     ],

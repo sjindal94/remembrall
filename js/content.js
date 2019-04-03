@@ -1,11 +1,6 @@
 // listen for checkForWord request, call getTags which includes callback to sendResponse
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendMessage) {
-        if (request.action === "checkForPassword") {
-            checkForPassword(request, sender, sendMessage);
-            // this is required to use sendResponse asynchronously
-            return true;
-        }
         if (request.action === "checkForSignup") {
             checkForSignup(request, sender, sendMessage);
             // this is required to use sendResponse asynchronously
