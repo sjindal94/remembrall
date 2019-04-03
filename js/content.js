@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(
 );
 
 
- function validateURL(request, sender, sendMessage) {
+function validateURL(request, sender, sendMessage) {
 
     var Urls = ['www.twilio.com', 'www.reddit.com','www.instagram.com','stackoverflow.com','www.google.com', 'www.amazon.com', 'www.facebook.com', 'www.microsoft.com', 'github.com'];
     console.log(location.href);
@@ -43,35 +43,6 @@ chrome.runtime.onMessage.addListener(
 
     console.log("EOF ValidateURL");
  }
-
-//Returns the index of the first instance of the desired word on the page.
-// function checkForW   ord(request, sender, sendResponse){
-//     var scripts = document.getElementsByTagName("script");
-//     for (var i=0;i<scripts.length;i++) {
-//         if (scripts[i].src.toLowerCase().indexOf("jquery")>-1){
-//             return sendResponse(true);
-//         }
-//     }
-//     return sendResponse(false);
-// }
-
-
-function checkForPassword(request, sender, sendMessage) {
-    console.log("checkForPassword");
-    var ele = [];
-
-    //check if tab.title has login word
-    //check if tab.url has login word
-    var inputs = document.getElementsByTagName("input");
-    for (var i = 0; i < inputs.length; i++) {
-        if (inputs[i].type.toLowerCase() === "password") {
-            ele.push(inputs[i]);
-            return sendMessage(true);
-        }
-    }
-    console.log(ele.toString());
-    return sendMessage(false);
-}
 
 /*
  * Rules to identify a signup page :
