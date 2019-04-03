@@ -42,7 +42,7 @@ function readDoc(_id) {
     });
 }
 
-function getDbInfo(){
+function infoDB(){
     if(!pouchDb) console.log("DB Does not exist");
     else pouchDb.info().then(function (info) {
         console.log(info);

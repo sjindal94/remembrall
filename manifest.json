@@ -3,7 +3,7 @@
   "version": "1.0",
   "description": "Chrome extension for a password manager that warns user for password reuse, phishing attacks, and malicious links.",
   "manifest_version": 2,
-  "minimum_chrome_version": "50",
+  "minimum_chrome_version": "30",
   "author": "Shubham Jindal, Shivasagar, Anirudh",
   "homepage_url": "https://github.com/sjindal94/remembrall",
   "browser_action": {
@@ -45,7 +45,6 @@
     "storage",
     "contextMenus",
     "webRequest",
-    "webRequestBlocking",
-    "<all_urls>"
+    "webRequestBlocking"
   ]
 }

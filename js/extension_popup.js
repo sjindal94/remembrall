@@ -47,25 +47,33 @@ document.addEventListener("DOMContentLoaded", function () {
     var getDBDataButton = document.getElementById('getDBData');
     getDBDataButton.addEventListener('click', () => {
         console.log("Current DB data");
-        readAllDocs();
+        chrome.runtime.sendMessage({type: "read_all_docs"}, function (response) {
+            console.log(response);
+        });
     });
 
     var createDBButton = document.getElementById('createDB');
     createDBButton.addEventListener('click', () => {
         console.log("Creating DB with dummy data");
-        createDB();
+        chrome.runtime.sendMessage({type: "create_db"}, function (response) {
+            console.log(response);
+        });
     });
 
     var destroyDBButton = document.getElementById('destroyDB');
     destroyDBButton.addEventListener('click', () => {
         console.log("Destroying DB");
-        destroyDB();
+        chrome.runtime.sendMessage({type: "destroy_db"}, function (response) {
+            console.log(response);
+        });
     });
 
     var infoDBButton = document.getElementById('infoDB');
     infoDBButton.addEventListener('click', () => {
         console.log("Info DB");
-        getDbInfo();
+        chrome.runtime.sendMessage({type: "info_db"}, function (response) {
+            console.log(response);
+        });
     });
 
     //Initialize with previous set value

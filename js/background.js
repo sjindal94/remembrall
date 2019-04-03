@@ -42,6 +42,18 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             });
             initDBForTest();
             break;
+        case 'create_db':
+            createDB();
+            break;
+        case 'destroy_db':
+            destroyDB();
+            break;
+        case 'read_all_docs':
+            readAllDocs();
+            break;
+        case 'info_db':
+            infoDB();
+            break;
         case 'validate_password':
             console.log(request);
             if(isDupePassword(request.password)) {
