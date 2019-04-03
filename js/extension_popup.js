@@ -71,42 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //Initialize with previous set value
     chrome.storage.sync.get("is_on", function (data) {
         if (data.is_on) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             switchButton.checked = true;
         } else {
             switchButton.checked = false;
