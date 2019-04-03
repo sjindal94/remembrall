@@ -24,8 +24,8 @@ To run the thing, these are the exact steps
 ## Authors
 
 * [**Shubham Jindal**](https://github.com/sjindal94)
-* [**Aniridh Kulkarni**]
-* [**Shivasagar Boraiah**]
+* **Aniridh Kulkarni**
+* **Shivasagar Boraiah**
 
 ## License
 
