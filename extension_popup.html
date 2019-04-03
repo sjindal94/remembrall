@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Remembrall Extension</title>
+    
     <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet">
     <script src="js/extension_popup.js"></script>
@@ -11,22 +12,30 @@
 
 <body>
 
-<div class="container" style="width: 400px;display: flex;flex-direction: column;justify-content: center; margin: 10px">
-    <h2 style="text-align: center;color: #89b4c7">Remembrall - Password manager with hightened senses</h2>
-    <h4 style="text-align: center">A a password manager that warns user for password reuse, phishing attacks, and
-        malicious links.</h4>
-    <label class="switch">
-        <input id="switch" type="checkbox">Toggle remembrall
-        <span class="slider"></span>
-    </label>
-
-    <button id="getCache">For dev only, Get cache</button>
-    <button id="clearCache">For dev only, Clear cache</button>
-    <button id="getDBData">For dev only, Get DB Data</button>
-    <button id="createDB">For dev only, Create DB</button>
-    <button id="destroyDB">For dev only, Destroy DB</button>
-    <button id="infoDB">For dev only, Info DB</button>
-</div>
+<div class="container" style="width: 290px;display: flex;flex-direction: column;justify-content: center; margin: 10px">
+    <h4 style="text-align: center;color: #17a2b8">Remembrall</h4>
+    <p style="text-align: center;font-size: smaller;">Password manager with hightened senses</p>
+    <hr style="height:40px">
+    <div class="row">
+        <div class="span6" style="float: none; margin: 0 auto;">
+            <label class="switch">
+                <input id="switch" type="checkbox"> Toggle remembrall
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div> 
+    <hr style="height:50px">
+    <p style="text-align: center;margin-bottom: initial;font-size: smaller;">(For Dev Use only)</p>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-info btn-sm" id="getCache">Get cache</button>
+        <button type="button" class="btn btn-outline-info btn-sm" id="createDB">Create DB</button>
+        <button type="button" class="btn btn-outline-info btn-sm" id="getDBData">Get DB Data</button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-info btn-sm" id="clearCache">Clear cache</button>
+        <button type="button" class="btn btn-outline-info btn-sm" id="destroyDB">Destroy DB</button>
+        <button type="button" class="btn btn-outline-info btn-sm" id="infoDB">Info DB</button>
+    </div>
 
 </body>
 </html>
