@@ -1,14 +1,18 @@
 var IS_ON = false;
-const used_passwords = new Set(['password123','password321','qwerty','terster1']);
 
 var isDupePassword = function(password) {
     console.log("In isDupePassword " + hashString(password));
-    count = pouchDb.find({
+    pouchDb.find({
         selector: {
             password: {$eq: hashString(password)}
         }
-    }).length;
-    return (count > 0);
+    }).then(function (result) {
+        console.log(result.docs.length);
+        return (result.docs.length > 0);
+    }).catch(function (err) {
+        console.log("ouch, an error");
+    });
+    return true;
 };
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
