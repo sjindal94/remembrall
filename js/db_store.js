@@ -1,7 +1,46 @@
 const pouchDb = new PouchDB('db_store');
 
-function readDoc(_id){
-    pouchDb.get(_id, function(err, doc) {
+function initDBForTest() {
+
+    var dbEntry1 = {
+        "_id": "1",
+        "url": "www.twilio.com",
+        "user_data": "some_email",
+        //"password": hashString("password123")
+        "password"  : "password123"
+    };
+    var dbEntry2 = {
+        "_id": "1",
+        "url": "www.github.com",
+        "user_data": "some_email",
+        //"password": hashString("password321")
+        "password": "password321"
+    };
+    var dbEntry3 = {
+        "_id": "1",
+        "url": "www.facebook.com",
+        "user_data": "some_email",
+        //"password": hashString("password")
+        "password": "password"
+    };
+    dbEntries = [dbEntry1, dbEntry2, dbEntry3];
+    writeBulkDocs(dbEntries);
+    readAllDocs();
+}
+
+function writeBulkDocs(docs) {
+    pouchDb.bulkDocs(docs, function (err, response) {
+        if (err) {
+            return console.log(err);
+        } else {
+            console.log(response);
+            console.log("Documents created Successfully");
+        }
+    });
+}
+
+function readDoc(_id) {
+    pouchDb.get(_id, function (err, doc) {
         if (err) {
             return console.log(err);
         } else {
@@ -10,8 +49,8 @@ function readDoc(_id){
     });
 }
 
-function writeDoc(doc){
-    pouchDb.put(doc, function(err, response) {
+function writeDoc(doc) {
+    pouchDb.put(doc, function (err, response) {
         if (err) {
             return console.log(err);
         } else {
@@ -21,9 +60,9 @@ function writeDoc(doc){
     });
 }
 
-function removeDoc(_id, _rev){
+function removeDoc(_id, _rev) {
     //Deleting an existing document
-    pouchDb.remove(_id, _rev, function(err) {
+    pouchDb.remove(_id, _rev, function (err) {
         if (err) {
             return console.log(err);
         } else {
@@ -34,7 +73,7 @@ function removeDoc(_id, _rev){
 
 function readAllDocs() {
     //Retrieving all the documents in PouchDB
-    pouchDb.allDocs({include_docs: true, descending: true}, function(err, docs) {
+    pouchDb.allDocs({include_docs: true, descending: true}, function (err, docs) {
         if (err) {
             return console.log(err);
         } else {

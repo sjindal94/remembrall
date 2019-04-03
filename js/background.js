@@ -1,5 +1,5 @@
 var IS_ON = false;
-const used_passwords = new Set(['password123','password321','qwerty', 'terster1']);
+const used_passwords = new Set(['password123', 'password321', 'qwerty', 'terster1']);
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (IS_ON && changeInfo.status == 'complete' && tab.active) {
@@ -34,43 +34,43 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 IS_ON = data.is_on;
                 sendResponse({result: 'Backgroung set value to ' + IS_ON});
             });
+            initDBForTest();
             break;
         case 'validate_password':
-            console.log(data);
-            console.log("PASSWORD : " + data.password);
-            var doc = {
-                "_id"       :   "1",
-                "url"       :   sender.tab.url,
-                "userid"  :   data.data,
-                "password"  :   request.password
+            var dbEntry = {
+                "_id": "1",
+                "url": sender.tab.url,
+                "user_data": request.data,
+                //"password": hashString(request.password)
+                "password": request.password
             };
-            writeDoc(doc);
+            writeDoc(dbEntry);
             readAllDocs();
-            //if(used_passwords.has(data.password)) {
-            //     alert("Already in Use! Choose a different password");
-            //     chrome.webRequest.onBeforeRequest.addListener(function(details) {
-            //         console.log("In callback");
-            //         return {cancel: true};
-            //     }, {
-            //         urls: [
-            //             '*://*/*'
-            //         ],
-            //         tabId: sender.tab.id
-            //     }, ["blocking"]);
-            //     console.log("Request stopped");
-            //
-            // } else {
-            //     // Store email, password and domain in the database
-            //     var doc = {
-            //         "_id"       :   "1",
-            //         "url"       :   data.url,
-            //         "username"  :   data.data,
-            //         "password"  :   data.password
-            //     };
-            //
-            //     writeDoc(doc);
-            //     readAllDocs();
-            // }
+            if (used_passwords.has(data.password)) {
+                alert("Already in Use! Choose a different password");
+                chrome.webRequest.onBeforeRequest.addListener(function (details) {
+                    console.log("In callback");
+                    return {cancel: true};
+                }, {
+                    urls: [
+                        '*://*/*'
+                    ],
+                    tabId: sender.tab.id
+                }, ["blocking"]);
+                console.log("Request stopped");
+
+            } else {
+                // Store email, password and domain in the database
+                var doc = {
+                    "_id": "1",
+                    "url": data.url,
+                    "username": data.data,
+                    "password": data.password
+                };
+
+                writeDoc(doc);
+                readAllDocs();
+            }
             break;
         case 'dialog':
             console.log("Dialog message");

@@ -12,8 +12,8 @@ chrome.runtime.onMessage.addListener(
             return true;
         }
         if (request.action === "validateURL") {
-             validateURL(request, sender, sendMessage);
-             return true;
+            validateURL(request, sender, sendMessage);
+            return true;
         }
     }
 );
@@ -21,28 +21,28 @@ chrome.runtime.onMessage.addListener(
 
 function validateURL(request, sender, sendMessage) {
 
-    var Urls = ['www.twilio.com', 'www.reddit.com','www.instagram.com','stackoverflow.com','www.google.com', 'www.amazon.com', 'www.facebook.com', 'www.microsoft.com', 'github.com'];
+    var Urls = getUrls();
     console.log(location.href);
     console.log(location.hostname);
     var domain = location.hostname;
     var flag = 0;
 
     for (var i = 0; i < Urls.length; i++) {
-         if (domain.match(Urls[i])) {
-             flag = 1;
-             console.log(Urls[i]);
-             console.log("domain found");
-         }
-     }
+        if (domain.match(Urls[i])) {
+            flag = 1;
+            console.log(Urls[i]);
+            console.log("domain found");
+        }
+    }
 
-     if (flag === 0) {
-         console.log("popUp");
-         //chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
-         chrome.extension.sendMessage({type: "dialog"}, $.noop);
-     }
+    if (flag === 0) {
+        console.log("popUp");
+        //chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
+        chrome.extension.sendMessage({type: "dialog"}, $.noop);
+    }
 
     console.log("EOF ValidateURL");
- }
+}
 
 /*
  * Rules to identify a signup page :
@@ -83,19 +83,19 @@ var regexExt = new RegExp(extraStrings.join("|"), "i"),
 
 var signup_form = null;
 
-var monitorForm = function() {
-    $(signup_form).submit(function(event) {
+var monitorForm = function () {
+    $(signup_form).submit(function (event) {
         console.log('submitting form');
         var form_data = {};
         var password;
-        for(var i = 0; i < this.elements.length; i++) {
+        for (var i = 0; i < this.elements.length; i++) {
             var name = this.elements[i].name;
             var type = this.elements[i].type;
             var value = this.elements[i].value;
             console.log(name + " " + value + " " + type);
-            if(type && type.toLowerCase() === "password")
+            if (type && type.toLowerCase() === "password")
                 password = this.elements[i].value;
-            if(name && type.toLowerCase() !== "hidden")
+            if (name && type.toLowerCase() !== "hidden")
                 form_data[name] = value;
         }
         console.log("Validating password");
@@ -103,9 +103,9 @@ var monitorForm = function() {
     });
 }
 
-var checkForSignup = function() {
+var checkForSignup = function () {
     var formsList = document.getElementsByTagName('form');
-    for(let i = 0, len = formsList.length; i < len; i++) {
+    for (let i = 0, len = formsList.length; i < len; i++) {
         var form = formsList[i];
         var method = form.method,
             id = form.id,
@@ -118,8 +118,8 @@ var checkForSignup = function() {
             containsSelect = false,
             containsExtra = false;
 
-        if(method == 'post' || method == 'get') {
-            if(regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
+        if (method == 'post' || method == 'get') {
+            if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
                 console.log("Page contains signup in id, action, name or classname");
                 signup_form = form;
                 break;
@@ -151,7 +151,7 @@ var checkForSignup = function() {
                         containsSelect = true;
                     }
                 }
-                if(containsEmail && containsPass && (containsExtra || containsSelect)) {
+                if (containsEmail && containsPass && (containsExtra || containsSelect)) {
                     console.log("Page contains signup");
                     signup_form = form;
                     break;
@@ -159,6 +159,6 @@ var checkForSignup = function() {
             }
         }
     }
-    if(signup_form !== null) monitorForm();
+    if (signup_form !== null) monitorForm();
 }
 checkForSignup();
