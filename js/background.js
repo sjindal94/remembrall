@@ -30,7 +30,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 "from a content script:" + sender.tab.url :
                 "from the extension");
             chrome.storage.sync.get("is_on", function (data) {
-                console.log(data.is_on);
                 IS_ON = data.is_on;
                 sendResponse({result: 'Backgroung set value to ' + IS_ON});
             });
@@ -41,8 +40,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 "_id": "1",
                 "url": sender.tab.url,
                 "user_data": request.data,
-                //"password": hashString(request.password)
-                "password": request.password
+                "password": hashString(request.password)
             };
             writeDoc(dbEntry);
             readAllDocs();

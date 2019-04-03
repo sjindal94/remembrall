@@ -50,10 +50,57 @@ document.addEventListener("DOMContentLoaded", function () {
         readAllDocs();
     });
 
+    var createDBButton = document.getElementById('createDB');
+    createDBButton.addEventListener('click', () => {
+        console.log("Creating DB with dummy data");
+        createDB();
+    });
+
+    var destroyDBButton = document.getElementById('destroyDB');
+    destroyDBButton.addEventListener('click', () => {
+        console.log("Destroying DB");
+        destroyDB();
+    });
+
     //Initialize with previous set value
     chrome.storage.sync.get("is_on", function (data) {
-        console.log(data);
         if (data.is_on) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             switchButton.checked = true;
         } else {
             switchButton.checked = false;

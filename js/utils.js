@@ -1,7 +1,6 @@
 var hashString = function (string) {
     var salt = "shubhamjindal"; //use current temperature for randomness
     var hashkey = CryptoJS.PBKDF2(string, salt, {keySize: 256 / 32, iterations: 1000}).toString();
-    console.log("key", hashkey)
     return hashkey;
 }
 
