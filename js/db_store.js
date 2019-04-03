@@ -2,21 +2,15 @@ var pouchDb = null;
 function initDBForTest() {
     console.log("Initializing DB");
     var dbEntry1 = {
-        "_id": "1",
-        "url": "www.twilio.com",
-        "user_data": "some_email",
+        "_id": hashString("www.twilio.com"),
         "password": hashString("password123")
     };
     var dbEntry2 = {
-        "_id": "2",
-        "url": "www.github.com",
-        "user_data": "some_email",
+        "_id": hashString("www.github.com"),
         "password": hashString("password321")
     };
     var dbEntry3 = {
-        "_id": "3",
-        "url": "www.facebook.com",
-        "user_data": "some_email",
+        "_id": hashString("www.facebook.com"),
         "password": hashString("password")
     };
     dbEntries = [dbEntry1, dbEntry2, dbEntry3];
@@ -106,6 +100,7 @@ function destroyDB(){
         if (err) {
             return console.log(err);
         } else {
+            console.log(response);
             console.log("Database Deleted");
         }
     });

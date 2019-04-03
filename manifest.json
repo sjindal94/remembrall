@@ -13,9 +13,10 @@
   },
   "background": {
     "scripts": [
+      "js/jquery.min.js",
       "js/pouchdb-7.0.0.min.js",
       "js/pbkdf2.js",
-      "js/utils.js",
+      "js/bg_utils.js",
       "js/pouchdb.find.js",
       "js/db_store.js",
       "js/background.js"
@@ -33,6 +34,7 @@
       ],
       "js": [
         "js/jquery.min.js",
+        "js/content_utils.js",
         "js/content.js"
       ],
       "run_at": "document_end"

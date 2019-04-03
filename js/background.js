@@ -9,7 +9,7 @@ var isDupePassword = function(password) {
         }
     }).length;
     return (count > 0);
-}
+};
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (IS_ON && changeInfo.status == 'complete' && tab.active) {
@@ -44,10 +44,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'validate_password':
             console.log(request);
-            console.log("PASSWORD : " + request.password);
             if(isDupePassword(request.password)) {
                 alert("Already in Use! Choose a different password");
-                chrome.webRequest.onBeforeRequest.addListener(function(details) {
+                chrome.webRequest.onBeforeRequest.addListener(function() {
                     console.log("In callback");
                     return {cancel: true};
                 }, {
@@ -60,10 +59,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             
             } else {
                     var doc = {
-                        "_id"       :   "1",
-                        "url"       :   sender.tab.url,
-                        "userid"    :   request.data,
-                        "password"  :   request.password
+                        "_id"       :   hashString(sender.tab.url),
+                        "password"  :   hashString(request.password)
                     };
                     writeDoc(doc);
                     readAllDocs();

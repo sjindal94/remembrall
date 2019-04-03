@@ -52,3 +52,5 @@ Design Decisions for report:
 The next step is to figure out whether your extension makes more sense as a browser action or a page action. The main difference is how they appear in the browser’s UI:
 Browser Actions are permanently displayed to the right of the address bar. These are good if your extension can work on any website, or if the extension is website agnostic. This is probably the right option for most extensions.
 So we choose Browser action
+
+We are using current temperature for salting purposes
