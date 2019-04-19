@@ -41,10 +41,11 @@
     }
   ],
   "permissions": [
-    "tabs",
     "storage",
     "contextMenus",
     "webRequest",
-    "webRequestBlocking"
+    "webRequestBlocking",
+    "tabs",
+    "<all_urls>"
   ]
 }

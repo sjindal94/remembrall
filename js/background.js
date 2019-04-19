@@ -3,7 +3,8 @@ var IS_ON = false;
 var addToStore = function(password, url) {
     console.log("In addToStore");
     var doc = {
-        "_id"       :   hashString(password),
+        "h_url"     :   hashString(url),
+        "h_password":   hashString(password),
         "url"       :   url,
         "password"  :   password
     };
@@ -87,7 +88,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             //         tabId: sender.tab.id
             //     }, ["blocking"]);
             //     console.log("Request stopped");
-            // } 
+            // }
             break;
         case 'dialog':
             console.log("Dialog message");
@@ -114,7 +115,5 @@ document.addEventListener('DOMContentLoaded', function () {
 //     // });
 //
 //
-// });
-
-// Start our listener
+// })
 
