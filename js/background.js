@@ -1,14 +1,32 @@
 var IS_ON = false;
 
-var isDupePassword = function(password) {
-    console.log("In isDupePassword " + hashString(password));
+var addToStore = function(password, url) {
+    console.log("In addToStore");
+    var doc = {
+        "_id"       :   hashString(password),
+        "url"       :   url,
+        "password"  :   password
+    };
+    writeDoc(doc);
+    console.log("Done addToStore successfully");
+    readAllDocs();
+}
+
+var isDupePassword = function(password, url, callback) {
+    console.log("In isDupePassword " + password);
     pouchDb.find({
         selector: {
-            password: {$eq: hashString(password)}
+            password: {$eq: password}
         }
     }).then(function (result) {
-        console.log(result.docs.length);
-        return (result.docs.length > 0);
+        console.log(result.docs);
+        if (result.docs.length == 0) {
+            url = extractDomainName(url);
+            console.log(url);
+            callback(password, url);
+        } else {
+            alert("Already in Use! Choose a different password");
+        };
     }).catch(function (err) {
         console.log("ouch, an error");
     });
@@ -58,27 +76,18 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'validate_password':
             console.log(request);
-            if(isDupePassword(request.password)) {
-                alert("Already in Use! Choose a different password");
-                chrome.webRequest.onBeforeRequest.addListener(function() {
-                    console.log("In callback");
-                    return {cancel: true};
-                }, {
-                    urls: [
-                        '*://*/*'
-                    ],
-                    tabId: sender.tab.id
-                }, ["blocking"]);
-                console.log("Request stopped");
-            
-            } else {
-                    var doc = {
-                        "_id"       :   hashString(sender.tab.url),
-                        "password"  :   hashString(request.password)
-                    };
-                    writeDoc(doc);
-                    readAllDocs();
-            }
+            isDupePassword(request.password, sender.tab.url, addToStore);
+            //     chrome.webRequest.onBeforeRequest.addListener(function() {
+            //         console.log("In callback");
+            //         return {cancel: true};
+            //     }, {
+            //         urls: [
+            //             '*://*/*'
+            //         ],
+            //         tabId: sender.tab.id
+            //     }, ["blocking"]);
+            //     console.log("Request stopped");
+            // } 
             break;
         case 'dialog':
             console.log("Dialog message");

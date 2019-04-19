@@ -1,17 +1,21 @@
 var pouchDb = null;
+
 function initDBForTest() {
     console.log("Initializing DB");
     var dbEntry1 = {
-        "_id": hashString("www.twilio.com"),
-        "password": hashString("password123")
+        "_id": hashString('password123'),
+        "url": "www.twilio.com",
+        "password": "password123"
     };
     var dbEntry2 = {
-        "_id": hashString("www.github.com"),
-        "password": hashString("password321")
+        "_id": hashString('password321'),
+        "url": "www.github.com",
+        "password": "password321"
     };
     var dbEntry3 = {
-        "_id": hashString("www.facebook.com"),
-        "password": hashString("password")
+        "_id": hashString('password'),
+        "url": "www.facebook.com",
+        "password": "password"
     };
     dbEntries = [dbEntry1, dbEntry2, dbEntry3];
     writeBulkDocs(dbEntries);
