@@ -35,9 +35,14 @@
       "js": [
         "js/jquery.min.js",
         "js/content_utils.js",
+        "js/pouchdb-7.0.0.min.js",
+        "js/pbkdf2.js",
+        "js/bg_utils.js",
+        "js/pouchdb.find.js",
+        "js/db_store.js",
         "js/content.js"
       ],
-      "run_at": "document_end"
+      "run_at": "document_idle"
     }
   ],
   "permissions": [

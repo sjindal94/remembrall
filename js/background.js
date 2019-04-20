@@ -1,8 +1,10 @@
 var IS_ON = false;
+var password, url;
 
 var addToStore = function(password, url) {
     console.log("In addToStore");
     var doc = {
+        "_id"       :   hashString(password),
         "h_url"     :   hashString(url),
         "h_password":   hashString(password),
         "url"       :   url,
@@ -13,6 +15,14 @@ var addToStore = function(password, url) {
     readAllDocs();
 }
 
+var notifyClient = function(isPresent) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {isPresent: isPresent}, function(response) {
+          console.log('Dummy response to keep the console quiet');
+        });
+    });
+}
+
 var isDupePassword = function(password, url, callback) {
     console.log("In isDupePassword " + password);
     pouchDb.find({
@@ -21,17 +31,19 @@ var isDupePassword = function(password, url, callback) {
         }
     }).then(function (result) {
         console.log(result.docs);
-        if (result.docs.length == 0) {
-            url = extractDomainName(url);
-            console.log(url);
-            callback(password, url);
-        } else {
-            alert("Already in Use! Choose a different password");
+        if (result.docs.length != 0) {
+            callback(true);
         };
     }).catch(function (err) {
         console.log("ouch, an error");
     });
 };
+
+var tabListener = function(tabId, info, tab) {
+    console.log('Siggnup success. Now add to store');
+    addToStore(password, url);
+    chrome.tabs.onUpdated.removeListener(tabListener);
+}
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (IS_ON && changeInfo.status == 'complete' && tab.active) {
@@ -75,24 +87,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         case 'info_db':
             infoDB();
             break;
-        case 'validate_password':
-            console.log(request);
-            isDupePassword(request.password, sender.tab.url, addToStore);
-            //     chrome.webRequest.onBeforeRequest.addListener(function() {
-            //         console.log("In callback");
-            //         return {cancel: true};
-            //     }, {
-            //         urls: [
-            //             '*://*/*'
-            //         ],
-            //         tabId: sender.tab.id
-            //     }, ["blocking"]);
-            //     console.log("Request stopped");
-            // }
-            break;
         case 'dialog':
             console.log("Dialog message");
             chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
+            break;
+        case 'dupePass':
+            console.log('In dupePass');
+            isDupePassword(request.password, request.url, notifyClient);
+            break;
+        case 'addToDatabase':
+            console.log('In addToDatabase');
+            password = request.password;
+            url = request.url;
+            chrome.tabs.onUpdated.addListener(tabListener);
             break;
     }
     return true;
@@ -100,10 +107,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 
 // Run our script as soon as the document's DOM is ready.
-document.addEventListener('DOMContentLoaded', function () {
-    console.log("Background loaded");
-    createDB();
-});
+// document.addEventListener('DOMContentLoaded', function () {
+//     console.log("Background loaded");
+//     createDB();
+// });
 
 
 // chrome.runtime.onInstalled.addListener(function (details) {
