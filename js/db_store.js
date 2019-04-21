@@ -1,17 +1,38 @@
-var pouchDb = null;
+const pouchDb = new PouchDB('db_store');
+// pouchDb.info().then(function (details) {
+//     if (details.doc_count == 0) {
+//         console.log ('No records exist');
+//         initDBForTest();
+//     } else 
+//         console.log('Records exist');
+// }).catch(function (err) {
+//     console.log('error: ' + err);
+//     return;
+// });
+
 function initDBForTest() {
     console.log("Initializing DB");
+    readAllDocs();
     var dbEntry1 = {
-        "_id": hashString("www.twilio.com"),
-        "password": hashString("password123")
+        "_id": hashString("password123"),
+        "h_url": hashString("www.twilio.com"),
+        "h_password": hashString("password123"),
+        "url": "www.twilio.com",
+        "password": "password123"
     };
     var dbEntry2 = {
-        "_id": hashString("www.github.com"),
-        "password": hashString("password321")
+        "_id": hashString("password321"),
+        "h_url": hashString("www.github.com"),
+        "h_password": hashString("password321"),
+        "url": "www.github.com",
+        "password": "password321"
     };
     var dbEntry3 = {
-        "_id": hashString("www.facebook.com"),
-        "password": hashString("password")
+        "_id": hashString("password"),
+        "h_url": hashString("www.facebook.com"),
+        "h_password": hashString("password"),
+        "url": "www.facebook.com",
+        "password": "password"
     };
     dbEntries = [dbEntry1, dbEntry2, dbEntry3];
     writeBulkDocs(dbEntries);
@@ -84,12 +105,6 @@ function readAllDocs() {
             return docs;
         }
     });
-}
-
-function createDB(){
-    //Creating the database object
-    pouchDb = new PouchDB('db_store');
-    initDBForTest();
 }
 
 function destroyDB(){

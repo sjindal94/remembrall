@@ -1,18 +1,3 @@
-// listen for checkForWord request, call getTags which includes callback to sendResponse
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendMessage) {
-        if (request.action === "checkForSignup") {
-            checkForSignup(request, sender, sendMessage);
-            // this is required to use sendResponse asynchronously
-            return true;
-        }
-        if (request.action === "validateURL") {
-            validateURL(request, sender, sendMessage);
-            return true;
-        }
-    }
-);
-
 /*
  * validateURL() - verifys the URL against the list of Certified URLs (Alexa 10K Websites) provides user options to 
  *                  -Dismiss Now (Alert user again)
@@ -31,10 +16,10 @@ function validateURL(request, sender, sendMessage) {
 
 //validateURL();
 
-/*
+{
+/* 
  * Rules to identify a signup page :
- * 1. The window.location has signup in its path
- * 2. There exists a form element in the html dom with
+ * 1. There exists a form element in the html dom with
  *      a. method == post
  *           i. action, id, or name containing words like ['signup']
  *          ii. form containing button type = 'submit' with value or name in ['signup','create','create account','register']
@@ -59,6 +44,7 @@ function validateURL(request, sender, sendMessage) {
  *      - Instacart
  *      - Apple
  */
+}
 
 var extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
     signupStrings = ['signup', 'create account', 'register', 'sign up'],
@@ -69,25 +55,33 @@ var regexExt = new RegExp(extraStrings.join("|"), "i"),
     regexBut = new RegExp(buttonStrings.join("|"), "i");
 
 var signup_form = null;
+var password_field = null;
 
+var protectPasswordInput = function(event) {
+    let password = event.currentTarget.value;
+    let url = window.location.hostname;
+    console.log("Inside protectPasswordInput. Password is : " + password);
+    console.log("Current host name : " + url);
+    chrome.runtime.sendMessage({type: "dupePass", url: url, password: password}, $.noop);
+}
+
+ /**
+ * This function binds our protection to any suitable input elements on the
+ * page. This way, we'll fire off the appropriate checks when an input value
+ * changes.
+ */
 var monitorForm = function () {
-    $(signup_form).submit(function (event) {
-        console.log('submitting form');
-        var form_data = {};
-        var password;
-        for (var i = 0; i < this.elements.length; i++) {
-            var name = this.elements[i].name;
-            var type = this.elements[i].type;
-            var value = this.elements[i].value;
-            console.log(name + " " + value + " " + type);
-            if (type && type.toLowerCase() === "password")
-                password = this.elements[i].value;
-            if (name && type.toLowerCase() !== "hidden")
-                form_data[name] = value;
+    for (var i = 0; i < signup_form.elements.length; i++) {
+        var type = signup_form.elements[i].type;
+        switch (signup_form.elements[i].type) {
+            case "password":
+                password_field = signup_form.elements[i];
+                console.log('password_field');
+                console.log(password_field);
+                signup_form.elements[i].addEventListener("change", protectPasswordInput);
+                break;
         }
-        console.log("Validating password");
-        chrome.extension.sendMessage({type: "validate_password", data: form_data, password: password}, $.noop);
-    });
+    }
 }
 
 var checkForSignup = function () {
@@ -149,3 +143,21 @@ var checkForSignup = function () {
     if (signup_form !== null) monitorForm();
 }
 checkForSignup();
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {   
+    if (request.isPresent) {
+        console.log("Password Exists");
+        alert("Already in Use! Choose a different password");
+        if(password_field != null) {
+            $(password_field).val("");
+            $(password_field).focus();
+        }
+    }
+});
+
+$(signup_form).on("submit", function () {
+    console.log('submitting form');
+    var password = password_field.value;
+    var url = window.location.hostname;
+    chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
+});

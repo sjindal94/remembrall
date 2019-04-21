@@ -1,4 +1,5 @@
 var IS_ON = false;
+var password, url;
 
 
 /*
@@ -6,8 +7,8 @@ var IS_ON = false;
  * http://www.primaryobjects.com/2012/11/19/parsing-hostname-and-domain-from-a-url-with-javascript/
  *
  */ 
-function getHostName(url) {
-    var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+function getHostName(taburl) {
+    var match = taburl.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
     if (match != null && match.length > 2 
         && typeof match[2] === 'string' && match[2].length > 0) {
         
@@ -66,20 +67,50 @@ var ismatchURL = function(tabUrl) {
 };
 
 
-var isDupePassword = function(password) {
-    console.log("In isDupePassword " + hashString(password));
+var addToStore = function(password, url) {
+    console.log("In addToStore");
+    var doc = {
+        "_id"       :   hashString(password),
+        "h_url"     :   hashString(url),
+        "h_password":   hashString(password),
+        "url"       :   url,
+        "password"  :   password
+    };
+    writeDoc(doc);
+    console.log("Done addToStore successfully");
+    readAllDocs();
+}
+
+var notifyClient = function(isPresent) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {isPresent: isPresent}, function(response) {
+          console.log('Dummy response to keep the console quiet');
+        });
+    });
+}
+
+var isDupePassword = function(password, url, callback) {
+    console.log("In isDupePassword " + password);
+
     pouchDb.find({
         selector: {
-            password: {$eq: hashString(password)}
+            password: {$eq: password}
         }
     }).then(function (result) {
-        console.log(result.docs.length);
-        return (result.docs.length > 0);
+        console.log(result.docs);
+        if (result.docs.length != 0) {
+            callback(true);
+        };
     }).catch(function (err) {
         console.log("ouch, an error");
     });
-    return true;
 };
+
+var tabListener = function(tabId, info, tab) {
+    console.log('Siggnup success. Now add to store');
+    addToStore(password, url);
+    chrome.tabs.onUpdated.removeListener(tabListener);
+}
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (IS_ON && changeInfo.status == 'complete' && tab.active) {
@@ -154,6 +185,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             //console.log(request.domain);
             ismatchURL(sender.tab.url);
             break;
+        case 'dupePass':
+            console.log('In dupePass');
+            isDupePassword(request.password, request.url, notifyClient);
+            break;
+        case 'addToDatabase':
+            console.log('In addToDatabase');
+            password = request.password;
+            url = request.url;
+            chrome.tabs.onUpdated.addListener(tabListener);
+            break;
     }
     return true;
 });
@@ -167,6 +208,10 @@ document.addEventListener('DOMContentLoaded', function () {
     createDBAlexa();
 });
 
+// document.addEventListener('DOMContentLoaded', function () {
+//     console.log("Background loaded");
+//     createDB();
+// });
 
 // chrome.runtime.onInstalled.addListener(function (details) {
 //     //To add a new right click option
@@ -177,7 +222,5 @@ document.addEventListener('DOMContentLoaded', function () {
 //     // });
 //
 //
-// });
-
-// Start our listener
+// })
 

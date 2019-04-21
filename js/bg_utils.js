@@ -9,3 +9,9 @@ var salt = "dummy";
 //     salt = JSON.stringify(json);
 // });
 
+var extractDomainName = function(url) {
+    var domain = url;
+    domain = domain.replace(/https?:\/\//,"");
+    domain = domain.replace(/\/.*$/,"");
+    return domain;  
+};
