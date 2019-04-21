@@ -14,7 +14,7 @@ function validateURL(request, sender, sendMessage) {
 
 }
 
-//validateURL();
+validateURL();
 
 {
 /* 

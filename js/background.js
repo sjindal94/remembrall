@@ -107,7 +107,7 @@ var isDupePassword = function(password, url, callback) {
 };
 
 var tabListener = function(tabId, info, tab) {
-    console.log('Siggnup success. Now add to store');
+    console.log('Signup success. Now add to store');
     addToStore(password, url);
     chrome.tabs.onUpdated.removeListener(tabListener);
 }
@@ -123,12 +123,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
             console.log("URL: " + tab.url);
         });
 
-        chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
-           chrome.tabs.sendMessage(tabs[0].id, {action: "validateURL"}, function (response) {
+        //chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
+           //chrome.tabs.sendMessage(tabs[0].id, {action: "validateURL"}, function (response) {
                 //alert(response);
-            });
+            //});
 
-        });
+        //});
     }
 });
 
@@ -156,31 +156,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         case 'info_db':
             infoDB();
             break;
-        case 'validate_password':
-            console.log(request);
-            if(isDupePassword(request.password)) {
-                alert("Already in Use! Choose a different password");
-                chrome.webRequest.onBeforeRequest.addListener(function() {
-                    console.log("In callback");
-                    return {cancel: true};
-                }, {
-                    urls: [
-                        '*://*/*'
-                    ],
-                    tabId: sender.tab.id
-                }, ["blocking"]);
-                console.log("Request stopped");
-            
-            } else {
-                    var doc = {
-                        "_id"       :   hashString(sender.tab.url),
-                        "password"  :   hashString(request.password)
-                    };
-                    writeDoc(doc);
-                    readAllDocs();
-            }
-            break;
-
         case 'dialog':
             //console.log(request.domain);
             ismatchURL(sender.tab.url);
@@ -204,7 +179,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Background loaded");
     //destroyDBAlexa();
-    createDB();
+    //createDB();
     createDBAlexa();
 });
 
