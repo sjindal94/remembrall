@@ -24,30 +24,12 @@ chrome.runtime.onMessage.addListener(
  */
 function validateURL(request, sender, sendMessage) {
 
-    var Urls = getUrls();
-    console.log(location.href);
-    console.log(location.hostname);
     var domain = location.hostname;
-    var flag = 0;
+    chrome.extension.sendMessage({type: "dialog", domain: domain}, $.noop);
 
-    for (var i = 0; i < Urls.length; i++) {
-        if (domain.match(Urls[i])) {
-            flag = 1;
-            console.log(Urls[i]);
-            console.log("domain found");
-        }
-    }
-
-    if (flag === 0) {
-        console.log("popUp");
-        //chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
-        chrome.extension.sendMessage({type: "dialog"}, $.noop);
-    }
-
-    console.log("EOF ValidateURL");
 }
 
-// validateURL();
+//validateURL();
 
 /*
  * Rules to identify a signup page :

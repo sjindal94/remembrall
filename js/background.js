@@ -1,5 +1,71 @@
 var IS_ON = false;
 
+
+/*
+ * Credits/Reference:
+ * http://www.primaryobjects.com/2012/11/19/parsing-hostname-and-domain-from-a-url-with-javascript/
+ *
+ */ 
+function getHostName(url) {
+    var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+    if (match != null && match.length > 2 
+        && typeof match[2] === 'string' && match[2].length > 0) {
+        
+            return match[2];
+    }
+    else {
+
+        return null;
+
+    }
+}
+
+var ismatchURL = function(tabUrl) {
+
+    var matchDomain = getHostName(tabUrl);
+
+    //@TODO: matchDomain is NULL
+    console.log(matchDomain);
+
+    pouchDbAlexa.find({
+        selector: {
+            Url: {$eq: matchDomain}
+        }
+    }).then(function (result) {
+
+        console.log(result.docs.length);
+        if (result.docs.length == 0) {
+
+            console.log("Alexa Outside 10K");
+            var retVal = confirm("Add this URL permanently to Alexa DB?");
+            //window.open(tabUrl,'height=200,width=150');
+            
+            if (retVal == true) {
+
+                console.log("Add to Alexa Database");
+                var doc = {
+                    "_id" : matchDomain,
+                    "Url" : matchDomain
+                };
+
+                writeDocAlexa(doc);
+                console.log("Added to store " + doc);
+                readAllDocsAlexa();
+
+            } else {
+                console.log("Do Not add to alexa database now");
+            };
+            //callback();
+        } else {
+            console.log("Alexa Within 10K");
+        };
+
+    }).catch(function (err) {
+        console.log(err);
+    });
+};
+
+
 var isDupePassword = function(password) {
     console.log("In isDupePassword " + hashString(password));
     pouchDb.find({
@@ -21,14 +87,16 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         for (var i = 0; i < allLinks.length; i++) {
             console.log("Link " + i + ": " + allLinks[i].href);
         }
+
         chrome.tabs.getSelected(null, function (tab) {
             console.log("URL: " + tab.url);
         });
 
         chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {action: "validateURL"}, function (response) {
+           chrome.tabs.sendMessage(tabs[0].id, {action: "validateURL"}, function (response) {
                 //alert(response);
             });
+
         });
     }
 });
@@ -81,9 +149,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     readAllDocs();
             }
             break;
+
         case 'dialog':
-            console.log("Dialog message");
-            chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
+            //console.log(request.domain);
+            ismatchURL(sender.tab.url);
             break;
     }
     return true;
@@ -93,7 +162,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 // Run our script as soon as the document's DOM is ready.
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Background loaded");
+    //destroyDBAlexa();
     createDB();
+    createDBAlexa();
 });
 
 

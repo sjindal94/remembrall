@@ -19,6 +19,7 @@
       "js/bg_utils.js",
       "js/pouchdb.find.js",
       "js/db_store.js",
+      "js/db_store_alexa.js",
       "js/background.js"
     ],
     "persistent": true
