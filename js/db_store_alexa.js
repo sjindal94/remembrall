@@ -2,21 +2,21 @@ var pouchDbAlexa = null;
 
 function parseTextFile(data) {
 
-    var lines=data.split(" ");
+    var lines = data.split(" ");
     //var result = [];
 
     //lines.length has all 10K URLs,
     //presenty we can test with 100 only.
-    for(var i=0; i<100; i++){
-  
-        var object = {};
-        var currentline=lines[i].split(",");
+    for (var i = 0; i < 100; i++) {
 
-        object[i]=currentline;
+        var object = {};
+        var currentline = lines[i].split(",");
+
+        object[i] = currentline;
         //result.push(obj);
 
         JSON.stringify(object[i]);
-        
+
         var id = object[i][0];
         var Url = object[i][1];
 
@@ -25,27 +25,28 @@ function parseTextFile(data) {
 
         var dbEntry = {
             "_id": id,
+            //remove id
             "Url": Url
         };
 
         writeDocAlexa(dbEntry);
         //readAllDocsAlexa();
-    
+
     }
 
     readAllDocsAlexa();
-    
-  }
 
+}
 
 
 /*
  * Reference/Credits:
  * https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
  *  
- */ 
+ */
+//Change name or design here
 const ReadTextFile = async file => {
- 
+
     const response = await fetch(file)
     const data = await response.text()
     //console.log(text)
@@ -62,11 +63,10 @@ function initializeDBAlexa() {
      * Reference/Credits:
      * https://jsfiddle.net/Santoshtiwari14/1c5z608s/
      *
-     */ 
+     */
     ReadTextFile('csv/alexa_10k.txt');
 
 }
-
 
 
 function initializeStaticDBAlexa() {
@@ -119,7 +119,7 @@ function initializeStaticDBAlexa() {
 
 
 function writeBulkDocsAlexa(docs) {
-    if(!pouchDbAlexa) console.log("DB Does not exist");
+    if (!pouchDbAlexa) console.log("DB Does not exist");
     else pouchDbAlexa.bulkDocs(docs, function (err, response) {
         if (err) {
             return console.log(err);
@@ -133,8 +133,8 @@ function writeBulkDocsAlexa(docs) {
 
 
 function readDocAlexa(_id) {
-    console.log("Reading just 1 entry with id:"+ _id);
-    if(!pouchDbAlexa) console.log("DB Does not exist");
+    console.log("Reading just 1 entry with id:" + _id);
+    if (!pouchDbAlexa) console.log("DB Does not exist");
     else pouchDbAlexa.get(_id, function (err, doc) {
         if (err) {
             return console.log(err);
@@ -145,12 +145,12 @@ function readDocAlexa(_id) {
 }
 
 function writeDocAlexa(doc) {
-    if(!pouchDbAlexa) console.log("DB Does not exist");
+    if (!pouchDbAlexa) console.log("DB Does not exist");
     else pouchDbAlexa.put(doc, function (err, response) {
         if (err) {
             return console.log(err);
         } else {
-            console.log(response);
+            //console.log(response);
             //console.log("Document Added to DB Successfully");
             //readDocAlexa("1");
         }
@@ -160,7 +160,7 @@ function writeDocAlexa(doc) {
 
 function readAllDocsAlexa() {
     //Retrieving all the documents in PouchDB
-    if(!pouchDbAlexa) console.log("DB Does not exist");
+    if (!pouchDbAlexa) console.log("DB Does not exist");
     else pouchDbAlexa.allDocs({include_docs: true, descending: true}, function (err, docs) {
         if (err) {
             return console.log(err);
@@ -171,16 +171,16 @@ function readAllDocsAlexa() {
     });
 }
 
-function createDBAlexa(){
+function createDBAlexa() {
     //Creating the database object
     pouchDbAlexa = new PouchDB('db_store_alexa');
     //destroyDBAlexa();
     initializeDBAlexa();
 }
 
-function destroyDBAlexa(){
+function destroyDBAlexa() {
     //deleting database
-    if(!pouchDbAlexa) console.log("DB Does not exist");
+    if (!pouchDbAlexa) console.log("DB Does not exist");
     else pouchDbAlexa.destroy(function (err, response) {
         if (err) {
             return console.log(err);

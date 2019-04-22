@@ -1,18 +1,7 @@
-const pouchDb = new PouchDB('db_store');
-// pouchDb.info().then(function (details) {
-//     if (details.doc_count == 0) {
-//         console.log ('No records exist');
-//         initDBForTest();
-//     } else 
-//         console.log('Records exist');
-// }).catch(function (err) {
-//     console.log('error: ' + err);
-//     return;
-// });
+var pouchDb = null;
 
 function initDBForTest() {
     console.log("Initializing DB");
-    readAllDocs();
     var dbEntry1 = {
         "_id": hashString("password123"),
         "h_url": hashString("www.twilio.com"),
@@ -39,7 +28,7 @@ function initDBForTest() {
 }
 
 function writeBulkDocs(docs) {
-    if(!pouchDb) console.log("DB Does not exist");
+    if (!pouchDb) console.log("DB Does not exist");
     else pouchDb.bulkDocs(docs, function (err, response) {
         if (err) {
             return console.log(err);
@@ -52,8 +41,8 @@ function writeBulkDocs(docs) {
 }
 
 function readDoc(_id) {
-    console.log("Reading just 1 entry with id:"+ _id);
-    if(!pouchDb) console.log("DB Does not exist");
+    console.log("Reading just 1 entry with id:" + _id);
+    if (!pouchDb) console.log("DB Does not exist");
     else pouchDb.get(_id, function (err, doc) {
         if (err) {
             return console.log(err);
@@ -63,15 +52,15 @@ function readDoc(_id) {
     });
 }
 
-function infoDB(){
-    if(!pouchDb) console.log("DB Does not exist");
+function infoDB() {
+    if (!pouchDb) console.log("DB Does not exist");
     else pouchDb.info().then(function (info) {
         console.log(info);
     })
 }
 
 function writeDoc(doc) {
-    if(!pouchDb) console.log("DB Does not exist");
+    if (!pouchDb) console.log("DB Does not exist");
     else pouchDb.put(doc, function (err, response) {
         if (err) {
             return console.log(err);
@@ -84,7 +73,7 @@ function writeDoc(doc) {
 
 function removeDoc(_id, _rev) {
     //Deleting an existing document
-    if(!pouchDb) console.log("DB Does not exist");
+    if (!pouchDb) console.log("DB Does not exist");
     else pouchDb.remove(_id, _rev, function (err) {
         if (err) {
             return console.log(err);
@@ -96,7 +85,7 @@ function removeDoc(_id, _rev) {
 
 function readAllDocs() {
     //Retrieving all the documents in PouchDB
-    if(!pouchDb) console.log("DB Does not exist");
+    if (!pouchDb) console.log("DB Does not exist");
     else pouchDb.allDocs({include_docs: true, descending: true}, function (err, docs) {
         if (err) {
             return console.log(err);
@@ -107,9 +96,15 @@ function readAllDocs() {
     });
 }
 
-function destroyDB(){
+function createDB() {
+    //Creating the database object
+    pouchDb = new PouchDB('db_store');
+    initDBForTest();
+}
+
+function destroyDB() {
     //deleting database
-    if(!pouchDb) console.log("DB Does not exist");
+    if (!pouchDb) console.log("DB Does not exist");
     else pouchDb.destroy(function (err, response) {
         if (err) {
             return console.log(err);
@@ -120,6 +115,7 @@ function destroyDB(){
         }
     });
 }
+
 /*
 Incase we save address, contact cards , secret files images etc
 //Adding attachment to a document

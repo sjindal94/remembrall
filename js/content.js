@@ -2,6 +2,14 @@
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendMessage) {
         console.log("Message received");
+        if (request.isPresent) {
+            console.log("Password Exists");
+            alert("Already in Use! Choose a different password");
+            if (password_field != null) {
+                $(password_field).val("");
+                $(password_field).focus();
+            }
+        }
         if (request.action === "detectPageType") {
             detectPageType();
         } else if (request.action === "validateURL") {
@@ -14,37 +22,19 @@ chrome.runtime.onMessage.addListener(
 );
 
 /*
- * validateURL() - verifys the URL against the list of Certified URLs (Alexa 10K Websites) provides user options to 
+ * validateURL() - verifys the URL against the list of Certified URLs (Alexa 10K Websites) provides user options to
  *                  -Dismiss Now (Alert user again)
  *                  -Dismiss Forever (Add this URL to list of Certified URLs)
- * 
- * Presently it is a static list of URLs where the user clicked URL will be verified 
+ *
+ * Presently it is a static list of URLs where the user clicked URL will be verified
  * and the options to dismiss/dismissForever is provided.
- *    
+ *
  */
 function validateURL(request, sender, sendMessage) {
 
-    var Urls = getUrls();
-    console.log(location.href);
-    console.log(location.hostname);
     var domain = location.hostname;
-    var flag = 0;
+    chrome.extension.sendMessage({type: "dialog", domain: domain}, $.noop);
 
-    for (var i = 0; i < Urls.length; i++) {
-        if (domain.match(Urls[i])) {
-            flag = 1;
-            console.log(Urls[i]);
-            console.log("domain found");
-        }
-    }
-
-    if (flag === 0) {
-        console.log("popUp");
-        //chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
-        chrome.extension.sendMessage({type: "dialog"}, $.noop);
-    }
-
-    console.log("EOF ValidateURL");
 }
 
 // validateURL();
@@ -87,32 +77,36 @@ var regexExt = new RegExp(extraStrings.join("|"), "i"),
     regexButton = new RegExp(buttonStrings.join("|"), "i");
 
 var signup_form = null;
+var password_field = null;
 
+var protectPasswordInput = function (event) {
+    let password = event.currentTarget.value;
+    let url = window.location.hostname;
+    console.log("Inside protectPasswordInput. Password is : " + password);
+    console.log("Current host name : " + url);
+    chrome.runtime.sendMessage({type: "dupePass", url: url, password: password}, $.noop);
+}
+
+/**
+ * This function binds our protection to any suitable input elements on the
+ * page. This way, we'll fire off the appropriate checks when an input value
+ * changes.
+ */
 var monitorForm = function () {
-    console.log('here');
-    $(signup_form).submit(function (event) {
-        console.log('submitting form');
-        var form_data = {};
-        var password;
-        for (var i = 0; i < this.elements.length; i++) {
-            var name = this.elements[i].name;
-            var type = this.elements[i].type;
-            var value = this.elements[i].value;
-            if (type && type.toLowerCase() === "password")
-                password = this.elements[i].value;
-            if (name && type.toLowerCase() !== "hidden")
-                form_data[name] = value;
+    for (var i = 0; i < signup_form.elements.length; i++) {
+        var type = signup_form.elements[i].type;
+        switch (signup_form.elements[i].type) {
+            case "password":
+                password_field = signup_form.elements[i];
+                console.log('password_field');
+                console.log(password_field);
+                signup_form.elements[i].addEventListener("change", protectPasswordInput);
+                break;
         }
-        console.log("Validating password");
-        chrome.extension.sendMessage({type: "validate_password", data: form_data, password: password}, function(response) {
-            console.log("HERE", response.result);
-            //event.preventDefault();
-        });
-    });
-    return true;
-};
+    }
+}
 
-function checkEmailElement(type, fieldName, className){
+function checkEmailElement(type, fieldName, className) {
     let fieldNameConditions = ["email", "id", "login"];
     let classNameConditions = ["email"];
 
@@ -120,7 +114,7 @@ function checkEmailElement(type, fieldName, className){
     var test2 = classNameConditions.some(el => className.includes(el));
 
     console.log(test1, test2);
-    if(type === "email" || test1 || test2){
+    if (type === "email" || test1 || test2) {
         return true;
     }
     return false;
@@ -188,3 +182,10 @@ var detectPageType = function () {
         //chrome.extension.sendMessage({type: "intercept_request"}, $.noop);
     }
 }
+
+$(signup_form).on("submit", function () {
+    console.log('submitting form');
+    var password = password_field.value;
+    var url = window.location.hostname;
+    chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
+});
