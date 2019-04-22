@@ -1,4 +1,9 @@
-var pouchDbAlexa = null;
+var webDb = null;
+
+function createWebStore() {
+    webDb = new PouchDB('web_store');
+    initWebDb();
+}
 
 function parseTextFile(data) {
 
@@ -10,9 +15,7 @@ function parseTextFile(data) {
     for (var i = 0; i < 100; i++) {
 
         var object = {};
-        var currentline = lines[i].split(",");
-
-        object[i] = currentline;
+        object[i] = lines[i].split(",");
         //result.push(obj);
 
         JSON.stringify(object[i]);
@@ -46,16 +49,15 @@ function parseTextFile(data) {
  */
 //Change name or design here
 const ReadTextFile = async file => {
-
-    const response = await fetch(file)
-    const data = await response.text()
+    //TODO: Need to check if await can be used to remove those port errors
+    const response = await fetch(file);
+    const data = await response.text();
     //console.log(text)
-    parseTextFile(data)
+    parseTextFile(data);
+};
 
-}
 
-
-function initializeDBAlexa() {
+function initWebDb() {
 
     console.log("Initializing DB for Alexa");
     /*
@@ -117,10 +119,36 @@ function initializeStaticDBAlexa() {
 
 }
 
+function writeDocAlexa(doc) {
+    if (webDb == null) console.log("DB Does not exist");
+    else webDb.put(doc, function (err, response) {
+        if (err) {
+            return console.log(err);
+        } else {
+            //console.log(response);
+            //console.log("Document Added to DB Successfully");
+            //readDocAlexa("1");
+        }
+    });
+}
+
+
+function readAllDocsAlexa() {
+    //Retrieving all the documents in credentialDb
+    if (webDb == null) console.log("DB Does not exist");
+    else webDb.allDocs({include_docs: true, descending: true}, function (err, docs) {
+        if (err) {
+            return console.log(err);
+        } else {
+            console.log(docs);
+            return docs;
+        }
+    });
+}
 
 function writeBulkDocsAlexa(docs) {
-    if (!pouchDbAlexa) console.log("DB Does not exist");
-    else pouchDbAlexa.bulkDocs(docs, function (err, response) {
+    if (webDb == null) console.log("DB Does not exist");
+    else webDb.bulkDocs(docs, function (err, response) {
         if (err) {
             return console.log(err);
         } else {
@@ -134,8 +162,8 @@ function writeBulkDocsAlexa(docs) {
 
 function readDocAlexa(_id) {
     console.log("Reading just 1 entry with id:" + _id);
-    if (!pouchDbAlexa) console.log("DB Does not exist");
-    else pouchDbAlexa.get(_id, function (err, doc) {
+    if (webDb == null) console.log("DB Does not exist");
+    else webDb.get(_id, function (err, doc) {
         if (err) {
             return console.log(err);
         } else {
@@ -144,51 +172,16 @@ function readDocAlexa(_id) {
     });
 }
 
-function writeDocAlexa(doc) {
-    if (!pouchDbAlexa) console.log("DB Does not exist");
-    else pouchDbAlexa.put(doc, function (err, response) {
-        if (err) {
-            return console.log(err);
-        } else {
-            //console.log(response);
-            //console.log("Document Added to DB Successfully");
-            //readDocAlexa("1");
-        }
-    });
-}
-
-
-function readAllDocsAlexa() {
-    //Retrieving all the documents in PouchDB
-    if (!pouchDbAlexa) console.log("DB Does not exist");
-    else pouchDbAlexa.allDocs({include_docs: true, descending: true}, function (err, docs) {
-        if (err) {
-            return console.log(err);
-        } else {
-            console.log(docs);
-            return docs;
-        }
-    });
-}
-
-function createDBAlexa() {
-    //Creating the database object
-    pouchDbAlexa = new PouchDB('db_store_alexa');
-    //destroyDBAlexa();
-    initializeDBAlexa();
-}
-
 function destroyDBAlexa() {
     //deleting database
-    if (!pouchDbAlexa) console.log("DB Does not exist");
-    else pouchDbAlexa.destroy(function (err, response) {
+    if (webDb == null) console.log("DB Does not exist");
+    else webDb.destroy(function (err, response) {
         if (err) {
             return console.log(err);
         } else {
-            console.log("Database AlexaDB Deleted");
+            webDb = null;
+            console.log("Database AlexaDB Deleted: ", response);
         }
     });
 }
-
-//createDBAlexa();
 

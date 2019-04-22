@@ -13,13 +13,13 @@
   },
   "background": {
     "scripts": [
-      "js/jquery.min.js",
-      "js/pouchdb-7.0.0.min.js",
-      "js/pbkdf2.js",
+      "lib/jquery.min.js",
+      "lib/pouchdb-7.0.0.min.js",
+      "lib/pbkdf2.js",
+      "lib/pouchdb.find.js",
       "js/bg_utils.js",
-      "js/pouchdb.find.js",
-      "js/db_store.js",
-      "js/db_store_alexa.js",
+      "js/credential_store.js",
+      "js/web_store.js",
       "js/background.js"
     ],
     "persistent": true
@@ -34,13 +34,13 @@
         "<all_urls>"
       ],
       "js": [
-        "js/jquery.min.js",
+        "lib/jquery.min.js",
+        "lib/pouchdb-7.0.0.min.js",
+        "lib/pbkdf2.js",
+        "lib/pouchdb.find.js",
         "js/content_utils.js",
-        "js/pouchdb-7.0.0.min.js",
-        "js/pbkdf2.js",
         "js/bg_utils.js",
-        "js/pouchdb.find.js",
-        "js/db_store.js",
+        "js/credential_store.js",
         "js/content.js"
       ],
       "run_at": "document_idle"
