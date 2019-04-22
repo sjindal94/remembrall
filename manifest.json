@@ -47,11 +47,11 @@
     }
   ],
   "permissions": [
+    "activeTab",
     "storage",
     "contextMenus",
     "webRequest",
     "webRequestBlocking",
-    "tabs",
     "<all_urls>"
   ]
 }

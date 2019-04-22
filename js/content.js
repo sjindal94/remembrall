@@ -1,3 +1,18 @@
+// listen for checkForWord request, call getTags which includes callback to sendResponse
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendMessage) {
+        console.log("Message received");
+        if (request.action === "detectPageType") {
+            detectPageType();
+        } else if (request.action === "validateURL") {
+            //validateURL(request, sender, sendMessage);
+        }
+        // this is required to use sendResponse asynchronously
+        console.log("Return true");
+        return true;
+    }
+);
+
 /*
  * validateURL() - verifys the URL against the list of Certified URLs (Alexa 10K Websites) provides user options to 
  *                  -Dismiss Now (Alert user again)
@@ -9,17 +24,35 @@
  */
 function validateURL(request, sender, sendMessage) {
 
+    var Urls = getUrls();
+    console.log(location.href);
+    console.log(location.hostname);
     var domain = location.hostname;
-    chrome.extension.sendMessage({type: "dialog", domain: domain}, $.noop);
+    var flag = 0;
 
+    for (var i = 0; i < Urls.length; i++) {
+        if (domain.match(Urls[i])) {
+            flag = 1;
+            console.log(Urls[i]);
+            console.log("domain found");
+        }
+    }
+
+    if (flag === 0) {
+        console.log("popUp");
+        //chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
+        chrome.extension.sendMessage({type: "dialog"}, $.noop);
+    }
+
+    console.log("EOF ValidateURL");
 }
 
-validateURL();
+// validateURL();
 
-{
-/* 
+/*
  * Rules to identify a signup page :
- * 1. There exists a form element in the html dom with
+ * 1. The window.location has signup in its path
+ * 2. There exists a form element in the html dom with
  *      a. method == post
  *           i. action, id, or name containing words like ['signup']
  *          ii. form containing button type = 'submit' with value or name in ['signup','create','create account','register']
@@ -44,7 +77,6 @@ validateURL();
  *      - Instacart
  *      - Apple
  */
-}
 
 var extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
     signupStrings = ['signup', 'create account', 'register', 'sign up'],
@@ -52,39 +84,50 @@ var extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
 
 var regexExt = new RegExp(extraStrings.join("|"), "i"),
     regex = new RegExp(signupStrings.join("|"), "i"),
-    regexBut = new RegExp(buttonStrings.join("|"), "i");
+    regexButton = new RegExp(buttonStrings.join("|"), "i");
 
 var signup_form = null;
-var password_field = null;
 
-var protectPasswordInput = function(event) {
-    let password = event.currentTarget.value;
-    let url = window.location.hostname;
-    console.log("Inside protectPasswordInput. Password is : " + password);
-    console.log("Current host name : " + url);
-    chrome.runtime.sendMessage({type: "dupePass", url: url, password: password}, $.noop);
-}
-
- /**
- * This function binds our protection to any suitable input elements on the
- * page. This way, we'll fire off the appropriate checks when an input value
- * changes.
- */
 var monitorForm = function () {
-    for (var i = 0; i < signup_form.elements.length; i++) {
-        var type = signup_form.elements[i].type;
-        switch (signup_form.elements[i].type) {
-            case "password":
-                password_field = signup_form.elements[i];
-                console.log('password_field');
-                console.log(password_field);
-                signup_form.elements[i].addEventListener("change", protectPasswordInput);
-                break;
+    console.log('here');
+    $(signup_form).submit(function (event) {
+        console.log('submitting form');
+        var form_data = {};
+        var password;
+        for (var i = 0; i < this.elements.length; i++) {
+            var name = this.elements[i].name;
+            var type = this.elements[i].type;
+            var value = this.elements[i].value;
+            if (type && type.toLowerCase() === "password")
+                password = this.elements[i].value;
+            if (name && type.toLowerCase() !== "hidden")
+                form_data[name] = value;
         }
+        console.log("Validating password");
+        chrome.extension.sendMessage({type: "validate_password", data: form_data, password: password}, function(response) {
+            console.log("HERE", response.result);
+            //event.preventDefault();
+        });
+    });
+    return true;
+};
+
+function checkEmailElement(type, fieldName, className){
+    let fieldNameConditions = ["email", "id", "login"];
+    let classNameConditions = ["email"];
+
+    var test1 = fieldNameConditions.some(el => fieldName.includes(el));
+    var test2 = classNameConditions.some(el => className.includes(el));
+
+    console.log(test1, test2);
+    if(type === "email" || test1 || test2){
+        return true;
     }
+    return false;
 }
 
-var checkForSignup = function () {
+var detectPageType = function () {
+    console.log("Detecting page type");
     var formsList = document.getElementsByTagName('form');
     for (let i = 0, len = formsList.length; i < len; i++) {
         var form = formsList[i];
@@ -110,54 +153,38 @@ var checkForSignup = function () {
                     let fieldName = element.name;
                     let className = element.className;
 
-                    if (type === "submit" && (regexBut.test(element.innerHTML) || regexBut.test(element.value))) {
+                    if (type === "submit" && (regexButton.test(element.innerHTML) || regexButton.test(element.value))) {
                         console.log("Page contains signup. Button label : " + element.innerHTML);
                         signup_form = form;
                         break;
                     }
-                    if (type === "email" || fieldName.includes("email") || fieldName.includes("id") || className.includes("email")) {
-                        // console.log("Contains Email/userid");
+                    if (checkEmailElement(type, fieldName, className)) {
                         containsEmail = true;
                     }
                     if (type === "password") {
-                        // console.log("Contains Password");
                         containsPass = true;
                     }
                     if (regexExt.test(fieldName)) {
-                        // console.log("Contains " + fieldName);
                         containsExtra = true;
                     }
                     if (type === "select") {
-                        // console.log("Contains Select");
                         containsSelect = true;
                     }
                 }
                 if (containsEmail && containsPass && (containsExtra || containsSelect)) {
-                    console.log("Page contains signup");
+                    console.log("Signup page detected");
                     signup_form = form;
                     break;
                 }
+                // } else if(containsEmail && containsPass) {
+                //     console.log("Login Page detected");
+                //     break;
+                // }
             }
         }
     }
-    if (signup_form !== null) monitorForm();
-}
-checkForSignup();
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {   
-    if (request.isPresent) {
-        console.log("Password Exists");
-        alert("Already in Use! Choose a different password");
-        if(password_field != null) {
-            $(password_field).val("");
-            $(password_field).focus();
-        }
+    if (signup_form !== null) {
+        monitorForm();
+        //chrome.extension.sendMessage({type: "intercept_request"}, $.noop);
     }
-});
-
-$(signup_form).on("submit", function () {
-    console.log('submitting form');
-    var password = password_field.value;
-    var url = window.location.hostname;
-    chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
-});
+}

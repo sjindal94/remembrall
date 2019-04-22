@@ -3,11 +3,11 @@ var hashString = function (string) {
 };
 
 var salt = "dummy";
-//API Keys should not be posted in git but since this is private r3epo we are doing it
-// $.getJSON("http://api.openweathermap.org/data/2.5/weather?q=London&APPID=f914ac022b86c488ee5274cd00131458",function(json){
-//     console.log(JSON.stringify(json));
-//     salt = JSON.stringify(json);
-// });
+//API Keys should not be posted in git but since this is private repo we are doing it
+$.getJSON("http://api.openweathermap.org/data/2.5/weather?q=London&APPID=f914ac022b86c488ee5274cd00131458",function(json){
+    console.log(JSON.stringify(json));
+    salt = JSON.stringify(json);
+});
 
 var extractDomainName = function(url) {
     var domain = url;

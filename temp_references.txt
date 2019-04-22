@@ -15,7 +15,7 @@ For parsing tab page dom
 https://www.thepolyglotdeveloper.com/2018/09/creating-basic-chrome-extension/
 
 
-
+https://riptutorial.com/google-chrome-extension/example/7152/send-a-response-asynchronously
 
 
 
@@ -25,6 +25,9 @@ Add helper page for first time users
 https://stackoverflow.com/questions/5745822/open-a-help-page-after-chrome-extension-is-installed-first-time
 
 Use omnibox
+
+Do this
+https://developer.chrome.com/extensions/contentSecurityPolicy
 
 
 
