@@ -28,7 +28,7 @@ function initDBForTest() {
 }
 
 function writeBulkDocs(docs) {
-    if (!pouchDb) console.log("DB Does not exist");
+    if (pouchDb == null) console.log("DB Does not exist");
     else pouchDb.bulkDocs(docs, function (err, response) {
         if (err) {
             return console.log(err);
@@ -42,7 +42,7 @@ function writeBulkDocs(docs) {
 
 function readDoc(_id) {
     console.log("Reading just 1 entry with id:" + _id);
-    if (!pouchDb) console.log("DB Does not exist");
+    if (pouchDb == null) console.log("DB Does not exist");
     else pouchDb.get(_id, function (err, doc) {
         if (err) {
             return console.log(err);
@@ -53,14 +53,14 @@ function readDoc(_id) {
 }
 
 function infoDB() {
-    if (!pouchDb) console.log("DB Does not exist");
+    if (pouchDb == null) console.log("DB Does not exist");
     else pouchDb.info().then(function (info) {
         console.log(info);
     })
 }
 
 function writeDoc(doc) {
-    if (!pouchDb) console.log("DB Does not exist");
+    if (pouchDb == null) console.log("DB Does not exist");
     else pouchDb.put(doc, function (err, response) {
         if (err) {
             return console.log(err);
@@ -73,7 +73,7 @@ function writeDoc(doc) {
 
 function removeDoc(_id, _rev) {
     //Deleting an existing document
-    if (!pouchDb) console.log("DB Does not exist");
+    if (pouchDb == null) console.log("DB Does not exist");
     else pouchDb.remove(_id, _rev, function (err) {
         if (err) {
             return console.log(err);
@@ -85,7 +85,7 @@ function removeDoc(_id, _rev) {
 
 function readAllDocs() {
     //Retrieving all the documents in PouchDB
-    if (!pouchDb) console.log("DB Does not exist");
+    if (pouchDb == null) console.log("DB Does not exist");
     else pouchDb.allDocs({include_docs: true, descending: true}, function (err, docs) {
         if (err) {
             return console.log(err);
@@ -104,7 +104,7 @@ function createDB() {
 
 function destroyDB() {
     //deleting database
-    if (!pouchDb) console.log("DB Does not exist");
+    if (pouchDb == null) console.log("DB Does not exist");
     else pouchDb.destroy(function (err, response) {
         if (err) {
             return console.log(err);

@@ -78,22 +78,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //Initialize with previous set value
     chrome.storage.sync.get("is_on", function (data) {
-        if (data.is_on) {
-            switchButton.checked = true;
-        } else {
-            switchButton.checked = false;
-        }
+        switchButton.checked = data.is_on;
     });
 });
 
 // Check whether new version is installed
 chrome.runtime.onInstalled.addListener(function (details) {
-    if (details.reason == "install") {
+    if (details.reason === "install") {
         console.log("This is a first install!");
+        setSalt();
         chrome.runtime.sendMessage({type: "set_val", data: IS_ON}, function (response) {
             console.log(response.result);
         });
-    } else if (details.reason == "update") {
+    } else if (details.reason === "update") {
         var thisVersion = chrome.runtime.getManifest().version;
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
     }
