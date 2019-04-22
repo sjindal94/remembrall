@@ -1,22 +1,33 @@
 // listen for checkForWord request, call getTags which includes callback to sendResponse
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendMessage) {
+chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
         console.log("Message received");
-        if (request.isPresent) {
-            console.log("Password Exists");
-            alert("Already in Use! Choose a different password");
-            if (password_field != null) {
-                $(password_field).val("");
-                $(password_field).focus();
-            }
-        }
-        if (request.action === "detectPageType") {
-            detectPageType();
-        } else if (request.action === "validateURL") {
-            //validateURL(request, sender, sendMessage);
+        switch (request.action) {
+            case "alertUser":
+                console.log("Password Exists");
+                alert("Already in Use! Choose a different password");
+                if (password_field != null) {
+                    $(password_field).val("");
+                    $(password_field).focus();
+                }
+                //sendResponse({result: 'success'});
+                break;
+            case "validateURL":
+                //validateURL(request, sender, sendMessage);
+                //TODO: Change method name to fetchDomainname,
+                var domain = location.hostname;
+                chrome.extension.sendMessage({type: "dialog", domain: domain}, $.noop);
+                //sendResponse({result: 'success'});
+                //TODO: optimize and use send response
+                break;
+            case "detectPageType":
+                detectPageType();
+                sendResponse({result: 'success'});
+                break;
+            default:
+                console.log("Invalid action received");
+            //sendResponse({result: 'failure'});
         }
         // this is required to use sendResponse asynchronously
-        console.log("Return true");
         return true;
     }
 );
@@ -30,14 +41,6 @@ chrome.runtime.onMessage.addListener(
  * and the options to dismiss/dismissForever is provided.
  *
  */
-function validateURL(request, sender, sendMessage) {
-
-    var domain = location.hostname;
-    chrome.extension.sendMessage({type: "dialog", domain: domain}, $.noop);
-
-}
-
-// validateURL();
 
 /*
  * Rules to identify a signup page :
@@ -79,12 +82,11 @@ var regexExt = new RegExp(extraStrings.join("|"), "i"),
 var signup_form = null;
 var password_field = null;
 
-var protectPasswordInput = function (event) {
+var passwordInputListener = function (event) {
     let password = event.currentTarget.value;
     let url = window.location.hostname;
-    console.log("Inside protectPasswordInput. Password is : " + password);
-    console.log("Current host name : " + url);
-    chrome.runtime.sendMessage({type: "dupePass", url: url, password: password}, $.noop);
+    console.log("passwordInputListener: ", password, url);
+    chrome.runtime.sendMessage({type: "checkPasswordReuse", url: url, password: password}, $.noop);
 }
 
 /**
@@ -93,14 +95,13 @@ var protectPasswordInput = function (event) {
  * changes.
  */
 var monitorForm = function () {
-    for (var i = 0; i < signup_form.elements.length; i++) {
-        var type = signup_form.elements[i].type;
+    for (let i = 0; i < signup_form.elements.length; i++) {
         switch (signup_form.elements[i].type) {
             case "password":
                 password_field = signup_form.elements[i];
-                console.log('password_field');
-                console.log(password_field);
-                signup_form.elements[i].addEventListener("change", protectPasswordInput);
+                //console.log('password_field');
+                //console.log(password_field);
+                signup_form.elements[i].addEventListener("change", passwordInputListener);
                 break;
         }
     }
@@ -110,14 +111,11 @@ function checkEmailElement(type, fieldName, className) {
     let fieldNameConditions = ["email", "id", "login"];
     let classNameConditions = ["email"];
 
-    var test1 = fieldNameConditions.some(el => fieldName.includes(el));
-    var test2 = classNameConditions.some(el => className.includes(el));
+    let test1 = fieldNameConditions.some(el => fieldName.includes(el));
+    let test2 = classNameConditions.some(el => className.includes(el));
 
-    console.log(test1, test2);
-    if (type === "email" || test1 || test2) {
-        return true;
-    }
-    return false;
+    //console.log(test1, test2);
+    return type === "email" || test1 || test2;
 }
 
 var detectPageType = function () {
@@ -154,9 +152,11 @@ var detectPageType = function () {
                     }
                     if (checkEmailElement(type, fieldName, className)) {
                         containsEmail = true;
+                        console.log("Contains email");
                     }
                     if (type === "password") {
                         containsPass = true;
+                        console.log("Contains password");
                     }
                     if (regexExt.test(fieldName)) {
                         containsExtra = true;
