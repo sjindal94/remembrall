@@ -76,8 +76,8 @@ var notifyClient = function (action) {
     });
 }
 
-var isDupePassword = function (password, url, callback) {
-    console.log("In isDupePassword " + password);
+function isPasswordReuse(password, url, callback) {
+    console.log("In isPasswordReuse " + password);
 
     pouchDb.find({
         selector: {
@@ -89,7 +89,7 @@ var isDupePassword = function (password, url, callback) {
             callback("alertUser");
         }
     }).catch(function (err) {
-        console.log("ouch, an error");
+        console.log("ouch, an error", err);
     });
 };
 
@@ -132,7 +132,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'checkPasswordReuse':
             console.log('In checkPasswordReuse');
-            isDupePassword(request.password, request.url, notifyClient);
+            isPasswordReuse(request.password, request.url, notifyClient);
             //sendResponse({result: 'is duplicate'});
             //TODO:Optimise here use sendresponse instead of notifyclient
             break;

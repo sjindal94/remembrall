@@ -4,7 +4,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
         switch (request.action) {
             case "alertUser":
                 console.log("Password Exists");
-                alert("Already in Use! Choose a different password");
+                if(mFormType === 'signup')
+                    alert("Already in Use! Choose a different password");
+                else {
+                    alert("Input password belongs to some other website, possible phishing attack.")
+                }
                 if (password_field != null) {
                     $(password_field).val("");
                     $(password_field).focus();
@@ -21,7 +25,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 break;
             case "detectPageType":
                 detectPageType();
-                sendResponse({result: 'success'});
+                //sendResponse({result: 'success'});
                 break;
             default:
                 console.log("Invalid action received");
@@ -71,18 +75,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
  *      - Apple
  */
 
-var extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
+let extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
     signupStrings = ['signup', 'create account', 'register', 'sign up'],
     buttonStrings = ['signup', 'create account', 'register', 'sign up', 'join'];
 
-var regexExt = new RegExp(extraStrings.join("|"), "i"),
+let regexExt = new RegExp(extraStrings.join("|"), "i"),
     regex = new RegExp(signupStrings.join("|"), "i"),
     regexButton = new RegExp(buttonStrings.join("|"), "i");
 
-var signup_form = null;
-var password_field = null;
+let mForm = null;
+let mFormType = null;
+let password_field = null;
 
-var passwordInputListener = function (event) {
+let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
     let url = window.location.hostname;
     console.log("passwordInputListener: ", password, url);
@@ -94,14 +99,14 @@ var passwordInputListener = function (event) {
  * page. This way, we'll fire off the appropriate checks when an input value
  * changes.
  */
-var monitorForm = function () {
-    for (let i = 0; i < signup_form.elements.length; i++) {
-        switch (signup_form.elements[i].type) {
+function monitorForm() {
+    for (let i = 0; i < mForm.elements.length; i++) {
+        switch (mForm.elements[i].type) {
             case "password":
-                password_field = signup_form.elements[i];
+                password_field = mForm.elements[i];
                 //console.log('password_field');
                 //console.log(password_field);
-                signup_form.elements[i].addEventListener("change", passwordInputListener);
+                mForm.elements[i].addEventListener("change", passwordInputListener);
                 break;
         }
     }
@@ -137,7 +142,7 @@ var detectPageType = function () {
         if (method == 'post' || method == 'get') {
             if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
                 console.log("Page contains signup in id, action, name or classname");
-                signup_form = form;
+                mForm = form;
                 break;
             } else {
                 for (let j = 0, element; element = elements[j++];) {
@@ -147,7 +152,7 @@ var detectPageType = function () {
 
                     if (type === "submit" && (regexButton.test(element.innerHTML) || regexButton.test(element.value))) {
                         console.log("Page contains signup. Button label : " + element.innerHTML);
-                        signup_form = form;
+                        mForm = form;
                         break;
                     }
                     if (checkEmailElement(type, fieldName, className)) {
@@ -167,23 +172,25 @@ var detectPageType = function () {
                 }
                 if (containsEmail && containsPass && (containsExtra || containsSelect)) {
                     console.log("Signup page detected");
-                    signup_form = form;
+                    mForm = form;
+                    mFormType = 'signup';
+                    break;
+                } else if(containsEmail && containsPass) {
+                    console.log("Login Page detected");
+                    mForm = form;
+                    mFormType = 'login';
                     break;
                 }
-                // } else if(containsEmail && containsPass) {
-                //     console.log("Login Page detected");
-                //     break;
-                // }
             }
         }
     }
-    if (signup_form !== null) {
+    if (mForm !== null) {
         monitorForm();
         //chrome.extension.sendMessage({type: "intercept_request"}, $.noop);
     }
 }
 
-$(signup_form).on("submit", function () {
+$(mForm).on("submit", function () {
     console.log('submitting form');
     var password = password_field.value;
     var url = window.location.hostname;
