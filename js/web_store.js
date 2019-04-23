@@ -5,43 +5,6 @@ function createWebStore() {
     initWebDb();
 }
 
-function parseTextFile(data) {
-
-    var lines = data.split(" ");
-    //var result = [];
-
-    //lines.length has all 10K URLs,
-    //presenty we can test with 100 only.
-    for (var i = 0; i < 100; i++) {
-
-        var object = {};
-        object[i] = lines[i].split(",");
-        //result.push(obj);
-
-        JSON.stringify(object[i]);
-
-        var id = object[i][0];
-        var Url = object[i][1];
-
-        //console.log(id);
-        //console.log(Url);
-
-        var dbEntry = {
-            "_id": id,
-            //remove id
-            "Url": Url
-        };
-
-        writeDocAlexa(dbEntry);
-        //readAllDocsAlexa();
-
-    }
-
-    readAllDocsAlexa();
-
-}
-
-
 /*
  * Reference/Credits:
  * https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
@@ -51,11 +14,11 @@ function parseTextFile(data) {
 const ReadTextFile = async file => {
     //TODO: Need to check if await can be used to remove those port errors
     const response = await fetch(file);
-    const data = await response.text();
-    //console.log(text)
-    parseTextFile(data);
+    const fileData = await response.text();
+    let docs = $.csv.toObjects(fileData);
+    writeBulkDocsAlexa(docs);
+    //TODO: remove _id, other csv files
 };
-
 
 function initWebDb() {
 
@@ -66,7 +29,8 @@ function initWebDb() {
      * https://jsfiddle.net/Santoshtiwari14/1c5z608s/
      *
      */
-    ReadTextFile('csv/alexa_10k.txt');
+
+    ReadTextFile('csv/top10000.csv');
 
 }
 
@@ -152,7 +116,6 @@ function writeBulkDocsAlexa(docs) {
         if (err) {
             return console.log(err);
         } else {
-            console.log(response);
             console.log("Documents created Successfully");
         }
     });
@@ -185,3 +148,39 @@ function destroyDBAlexa() {
     });
 }
 
+//
+// function parseTextFile(data) {
+//
+//     var lines = data.split(" ");
+//     //var result = [];
+//
+//     //lines.length has all 10K URLs,
+//     //presenty we can test with 100 only.
+//     for (var i = 0; i < 100; i++) {
+//
+//         var object = {};
+//         object[i] = lines[i].split(",");
+//         //result.push(obj);
+//
+//         JSON.stringify(object[i]);
+//
+//         var id = object[i][0];
+//         var Url = object[i][1];
+//
+//         //console.log(id);
+//         //console.log(Url);
+//
+//         var dbEntry = {
+//             "_id": id,
+//             //remove id
+//             "Url": Url
+//         };
+//
+//         writeDocAlexa(dbEntry);
+//         //readAllDocsAlexa();
+//
+//     }
+//     console.log("Reading doc");
+//     readAllDocsAlexa();
+//
+// }
