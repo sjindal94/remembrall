@@ -5,12 +5,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
             case "alertUser":
                 console.log("Password Exists");
                 if(currentForm === 'signup') {
-                    alert("Already in Use! Choose a different password");
+                    alert("Remembrall : Already in Use! Choose a different password");
                     $(signupForm.password_field).val("");
                     $(signupForm.password_field).focus();
                 }
                 else if(currentForm === 'login') {
-                    alert("Input password belongs to some other website, possible phishing attack.");
+                    alert("Remembrall : Input password belongs to some other website, possible phishing attack.");
                     $(loginForm.password_field).val("");
                     $(loginForm.password_field).focus();
                 }
@@ -81,9 +81,9 @@ var currentForm = null;
 let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
     let url = window.location.hostname;
-    if(this === signupForm.password_field)
+    if(signupForm !== null && this === signupForm.password_field)
         currentForm = 'signup';
-    else if(this === loginForm.password_field)
+    else if(loginForm !== null && this === loginForm.password_field)
         currentForm = 'login';
     else
         console.log("None");    
