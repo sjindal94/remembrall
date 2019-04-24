@@ -74,10 +74,6 @@ let regexExt = new RegExp(extraStrings.join("|"), "i"),
     regex = new RegExp(signupStrings.join("|"), "i"),
     regexButton = new RegExp(buttonStrings.join("|"), "i");
 
-let mForm = null;
-let mFormType = null;
-let password_field = null;
-
 var signupForm = null;
 var loginForm = null;
 var currentForm = null;
