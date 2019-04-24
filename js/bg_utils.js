@@ -12,6 +12,9 @@ var hashString = function (string) {
     return CryptoJS.PBKDF2(string, salt, {keySize: 256 / 32, iterations: 1000}).toString();
 };
 
+/* Credits/Reference:
+* http://www.primaryobjects.com/2012/11/19/parsing-hostname-and-domain-from-a-url-with-javascript/
+*/
 function getHostName(taburl) {
     var match = taburl.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
     if (match != null && match.length > 2

@@ -3,53 +3,58 @@ let password, url;
 
 
 /*
- * Credits/Reference:
- * http://www.primaryobjects.com/2012/11/19/parsing-hostname-and-domain-from-a-url-with-javascript/
- *
+ * isURLinWebStore() - check for the URL in the WebDb(), if NOT,
+ *                     depending on the user Input add/dissmiss the URL.
+ * @tabURL: URL, the user presently inspecting.
  */
-
-let ismatchURL = function (tabUrl) {
-
+let isURLinWebStore = function (tabUrl) {
     let matchDomain = getHostName(tabUrl);
-
-    //@TODO: matchDomain is NULL
-    console.log(matchDomain);
-
     webDb.find({
         selector: {
-            Url: {$eq: matchDomain}
+            url: {$eq: matchDomain}
         }
     }).then(function (result) {
-
-        console.log(result.docs.length);
-        if (result.docs.length === 0) {
-
-            console.log("Alexa Outside 10K");
-            let retVal = confirm("Add this URL permanently to Alexa DB?");
-            //window.open(tabUrl,'height=200,width=150');
-
-            if (retVal === true) {
-
-                console.log("Add to Alexa Database");
-                let doc = {
-                    "_id": matchDomain,
-                    "Url": matchDomain
-                };
-
-                writeDocAlexa(doc);
-                console.log("Added to store " + doc);
-                readAllDocsAlexa();
-
-            } else {
-                console.log("Do Not add to alexa database now");
-            }
-            //callback();
-        } else {
-            console.log("Alexa Within 10K");
-        }
+        userInput(result.docs.length, matchDomain);
     }).catch(function (err) {
         console.log(err);
     });
+};
+
+
+/*
+ * userInput() - call methods to add URL to WebDb() as per the user action
+ *  @length: 1 - URL present in WebDb(), Do nothing
+ *           0 - URL not in WebDb(), take the user input(retVal)
+ *  @retVal: true  - add permanently to WebDb()
+ *           false - dissmiss for now, Do nothing.                           
+ */
+let userInput = function (length, DomainName) {
+    if (length === 0) {
+        console.log("URL not in the Web Store");
+        let retVal = confirm("Add this URL permanently to the Web Store?");
+        //window.open(tabUrl,'height=200,width=150');
+        if (retVal === true) {
+            console.log("UserInput: add URL to Web Store");
+            addToWebStore(DomainName);
+        } else {
+            console.log("UserInput: Do Not add URL to Web Store");
+        }
+    } else {
+        console.log("URL in the Web Store");
+    }
+};
+
+
+/*
+ * addToWebStore() - add the DomainName to the WebDb()
+ */
+let addToWebStore = function (DomainName) {
+    let doc = {
+        "_id": hashString(DomainName),
+        "url": DomainName
+    };
+    writeDocWebDb(doc);
+    readDocWebDb(hashString(DomainName));
 };
 
 
@@ -110,6 +115,10 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         });
 
         notifyClient("detectPageType");
+
+        //inspect the weblink by sending message to content.js
+        notifyClient("fetchDomainname");
+
     }
 });
 
@@ -123,10 +132,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 //if(IS_ON) askContent();
             });
             break;
-
-        case 'dialog':
-            //TODO:No need of this case if optimized
-            ismatchURL(sender.tab.url);
+        case 'URLinWebStore':
+            isURLinWebStore(sender.tab.url);
             //sendResponse({result: ''});
             break;
         case 'checkPasswordReuse':
@@ -171,3 +178,33 @@ document.addEventListener('DOMContentLoaded', function () {
     createCredentialStore();
     createWebStore();
 });
+
+
+
+
+// if (result.docs.length === 0) {
+
+//     console.log("Alexa Outside 10K");
+//     let retVal = confirm("Add this URL permanently to the Web Store?");
+//     //window.open(tabUrl,'height=200,width=150');
+
+//     if (retVal === true) {
+ //         addToWebStore(matchDomain);
+//     } else {
+//         console.log("Dissmiss for Now");
+//     }
+//     //callback();
+// } else {
+//     console.log("");
+// }
+
+
+//console.log("Add to Alexa Database");
+// let doc = {
+//     "_id": hashString(matchDomain),
+//     "url": matchDomain
+// };
+
+// writeDocWebDb(doc);
+// //console.log("Added to store " + doc);
+// readDocWebDb(matchDomain);

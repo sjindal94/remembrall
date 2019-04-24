@@ -16,13 +16,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 }
                 //sendResponse({result: 'success'});
                 break;
-            case "validateURL":
-                //validateURL(request, sender, sendMessage);
-                //TODO: Change method name to fetchDomainname,
+            case "fetchDomainname":
                 var domain = location.hostname;
-                chrome.extension.sendMessage({type: "dialog", domain: domain}, $.noop);
+                chrome.extension.sendMessage({type: "URLinWebStore", domain: domain}, $.noop);
                 //sendResponse({result: 'success'});
-                //TODO: optimize and use send response
                 break;
             case "detectPageType":
                 checkForForms(detectPageType);
