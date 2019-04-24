@@ -36,6 +36,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
     }
 );
 
+
 /*
  * validateURL() - verifys the URL against the list of Certified URLs (Alexa 10K Websites) provides user options to
  *                  -Dismiss Now (Alert user again)
@@ -45,6 +46,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
  * and the options to dismiss/dismissForever is provided.
  *
  */
+function validateURL(request, sender, sendMessage) {
+    var Urls = getUrls();
+    console.log(location.href);
+    console.log(location.hostname);
+    var domain = location.hostname;
+    var flag = 0;
+
+    for (var i = 0; i < Urls.length; i++) {
+        if (domain.match(Urls[i])) {
+            flag = 1;
+            console.log(Urls[i]);
+            console.log("domain found");
+        }
+    }
+
+    if (flag === 0) {
+        console.log("popUp");
+        //chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
+        chrome.runtime.sendMessage({type: "dialog"}, $.noop);
+    }
+}
 
 /*
  * Rules to identify a signup page :
@@ -87,6 +109,8 @@ let mForm = null;
 let mFormType = null;
 let password_field = null;
 
+
+
 let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
     let url = window.location.hostname;
@@ -99,16 +123,19 @@ let passwordInputListener = function (event) {
  * page. This way, we'll fire off the appropriate checks when an input value
  * changes.
  */
-function monitorForm() {
-    for (let i = 0; i < mForm.elements.length; i++) {
+
+var monitorForm = function () {
+    var found = false;
+    for (var i = 0; i < mForm.elements.length; i++) {
+        var type = mForm.elements[i].type;
         switch (mForm.elements[i].type) {
             case "password":
                 password_field = mForm.elements[i];
-                //console.log('password_field');
-                //console.log(password_field);
                 mForm.elements[i].addEventListener("change", passwordInputListener);
+                found = true;
                 break;
         }
+        if(found) break;
     }
 }
 
@@ -123,10 +150,9 @@ function checkEmailElement(type, fieldName, className) {
     return type === "email" || test1 || test2;
 }
 
-var detectPageType = function () {
+var detectPageType = function (formsList) {
     console.log("Detecting page type");
-    var formsList = document.getElementsByTagName('form');
-    for (let i = 0, len = formsList.length; i < len; i++) {
+    for (let i = 0 ; i < formsList.length; i++) {
         var form = formsList[i];
         var method = form.method,
             id = form.id,
@@ -138,7 +164,6 @@ var detectPageType = function () {
             containsPass = false,
             containsSelect = false,
             containsExtra = false;
-
         if (method == 'post' || method == 'get') {
             if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
                 console.log("Page contains signup in id, action, name or classname");
@@ -175,7 +200,7 @@ var detectPageType = function () {
                     mForm = form;
                     mFormType = 'signup';
                     break;
-                } else if(containsEmail && containsPass) {
+                } else if (containsEmail && containsPass) {
                     console.log("Login Page detected");
                     mForm = form;
                     mFormType = 'login';
@@ -184,15 +209,38 @@ var detectPageType = function () {
             }
         }
     }
+
     if (mForm !== null) {
+        $(mForm).on("submit", function () {
+            console.log('submitting form');
+            var password = password_field.value;
+            var url = window.location.hostname;
+            chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
+        });
         monitorForm();
-        //chrome.extension.sendMessage({type: "intercept_request"}, $.noop);
     }
 }
 
-$(mForm).on("submit", function () {
-    console.log('submitting form');
-    var password = password_field.value;
-    var url = window.location.hostname;
-    chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
+var checkForForms = function(callback) {
+    var formsList = document.getElementsByTagName('form');
+    console.log("In checkForForms");
+    setTimeout(function() {
+        if(formsList.length > 0)
+            callback(formsList);
+    }, 1000);
+}
+
+checkForForms(detectPageType);
+
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {   
+    if (request.isPresent) {
+        console.log("Password Exists");
+        alert("Remembrall : Already in Use! Choose a different password");
+        // notifyClient();
+        if(password_field != null) {
+            $(password_field).val("");
+            $(password_field).focus();
+        }
+    }
 });

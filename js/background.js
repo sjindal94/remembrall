@@ -78,7 +78,6 @@ var notifyClient = function (action) {
 
 function isPasswordReuse(password, url, callback) {
     console.log("In isPasswordReuse " + password);
-
     pouchDb.find({
         selector: {
             password: {$eq: password}
