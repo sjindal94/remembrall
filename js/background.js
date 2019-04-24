@@ -15,7 +15,7 @@ let ismatchURL = function (tabUrl) {
     //@TODO: matchDomain is NULL
     console.log(matchDomain);
 
-    pouchDbAlexa.find({
+    webDb.find({
         selector: {
             Url: {$eq: matchDomain}
         }
@@ -53,9 +53,9 @@ let ismatchURL = function (tabUrl) {
 };
 
 
-var addToStore = function (password, url) {
+let addToStore = function (password, url) {
     console.log("In addToStore");
-    var doc = {
+    let doc = {
         "_id": hashString(password),
         "h_url": hashString(url),
         "h_password": hashString(password),
@@ -65,20 +65,20 @@ var addToStore = function (password, url) {
     writeDoc(doc);
     console.log("Done addToStore successfully");
     readAllDocs();
-}
+};
 
-var notifyClient = function (action) {
+let notifyClient = function (action) {
     console.log("Sending message to Client: ", action);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {action: action}, function (response) {
             console.log("Response from web content: ", response);
         });
     });
-}
+};
 
 function isPasswordReuse(password, url, callback) {
     console.log("In isPasswordReuse " + password);
-    pouchDb.find({
+    credentialDb.find({
         selector: {
             password: {$eq: password}
         }
@@ -90,13 +90,13 @@ function isPasswordReuse(password, url, callback) {
     }).catch(function (err) {
         console.log("ouch, an error", err);
     });
-};
+}
 
-var tabListener = function (tabId, info, tab) {
+let tabListener = function () {
     console.log('Signup success. Now add to store');
     addToStore(password, url);
     chrome.tabs.onUpdated.removeListener(tabListener);
-}
+};
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (IS_ON && changeInfo.status === 'complete' && tab.active) {
@@ -143,7 +143,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             //sendResponse({result: 'Added to DB'});
             break;
         case 'create_db':
-            createDB();
+            createCredentialStore();
             sendResponse({result: 'DB created'});
             break;
         case 'destroy_db':
@@ -168,6 +168,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 // Run our script as soon as the document's DOM is ready.
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Background loaded");
-    createDB();
-    //createDBAlexa();
+    createCredentialStore();
+    createWebStore();
 });

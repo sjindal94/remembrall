@@ -1,4 +1,4 @@
-var pouchDb = null;
+var credentialDb = null;
 
 function initDBForTest() {
     console.log("Initializing DB");
@@ -28,8 +28,8 @@ function initDBForTest() {
 }
 
 function writeBulkDocs(docs) {
-    if (pouchDb == null) console.log("DB Does not exist");
-    else pouchDb.bulkDocs(docs, function (err, response) {
+    if (credentialDb == null) console.log("DB Does not exist");
+    else credentialDb.bulkDocs(docs, function (err, response) {
         if (err) {
             return console.log(err);
         } else {
@@ -42,8 +42,8 @@ function writeBulkDocs(docs) {
 
 function readDoc(_id) {
     console.log("Reading just 1 entry with id:" + _id);
-    if (pouchDb == null) console.log("DB Does not exist");
-    else pouchDb.get(_id, function (err, doc) {
+    if (credentialDb == null) console.log("DB Does not exist");
+    else credentialDb.get(_id, function (err, doc) {
         if (err) {
             return console.log(err);
         } else {
@@ -53,15 +53,15 @@ function readDoc(_id) {
 }
 
 function infoDB() {
-    if (pouchDb == null) console.log("DB Does not exist");
-    else pouchDb.info().then(function (info) {
+    if (credentialDb == null) console.log("DB Does not exist");
+    else credentialDb.info().then(function (info) {
         console.log(info);
     })
 }
 
 function writeDoc(doc) {
-    if (pouchDb == null) console.log("DB Does not exist");
-    else pouchDb.put(doc, function (err, response) {
+    if (credentialDb == null) console.log("DB Does not exist");
+    else credentialDb.put(doc, function (err, response) {
         if (err) {
             return console.log(err);
         } else {
@@ -73,8 +73,8 @@ function writeDoc(doc) {
 
 function removeDoc(_id, _rev) {
     //Deleting an existing document
-    if (pouchDb == null) console.log("DB Does not exist");
-    else pouchDb.remove(_id, _rev, function (err) {
+    if (credentialDb == null) console.log("DB Does not exist");
+    else credentialDb.remove(_id, _rev, function (err) {
         if (err) {
             return console.log(err);
         } else {
@@ -84,9 +84,9 @@ function removeDoc(_id, _rev) {
 }
 
 function readAllDocs() {
-    //Retrieving all the documents in PouchDB
-    if (pouchDb == null) console.log("DB Does not exist");
-    else pouchDb.allDocs({include_docs: true, descending: true}, function (err, docs) {
+    //Retrieving all the documents in credentialDb
+    if (credentialDb == null) console.log("DB Does not exist");
+    else credentialDb.allDocs({include_docs: true, descending: true}, function (err, docs) {
         if (err) {
             return console.log(err);
         } else {
@@ -96,20 +96,19 @@ function readAllDocs() {
     });
 }
 
-function createDB() {
-    //Creating the database object
-    pouchDb = new PouchDB('db_store');
+function createCredentialStore() {
+    credentialDb = new PouchDB('credential_store');
     initDBForTest();
 }
 
 function destroyDB() {
     //deleting database
-    if (pouchDb == null) console.log("DB Does not exist");
-    else pouchDb.destroy(function (err, response) {
+    if (credentialDb == null) console.log("DB Does not exist");
+    else credentialDb.destroy(function (err, response) {
         if (err) {
             return console.log(err);
         } else {
-            pouchDb = null;
+            credentialDb = null;
             console.log(response);
             console.log("Database Deleted");
         }
