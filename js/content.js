@@ -36,38 +36,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
     }
 );
 
-
-/*
- * validateURL() - verifys the URL against the list of Certified URLs (Alexa 10K Websites) provides user options to
- *                  -Dismiss Now (Alert user again)
- *                  -Dismiss Forever (Add this URL to list of Certified URLs)
- *
- * Presently it is a static list of URLs where the user clicked URL will be verified
- * and the options to dismiss/dismissForever is provided.
- *
- */
-function validateURL(request, sender, sendMessage) {
-    var Urls = getUrls();
-    console.log(location.href);
-    console.log(location.hostname);
-    var domain = location.hostname;
-    var flag = 0;
-
-    for (var i = 0; i < Urls.length; i++) {
-        if (domain.match(Urls[i])) {
-            flag = 1;
-            console.log(Urls[i]);
-            console.log("domain found");
-        }
-    }
-
-    if (flag === 0) {
-        console.log("popUp");
-        //chrome.windows.create({url: chrome.extension.getURL("dialog.html"), type: "popup"});
-        chrome.runtime.sendMessage({type: "dialog"}, $.noop);
-    }
-}
-
 /*
  * Rules to identify a signup page :
  * 1. The window.location has signup in its path
@@ -108,8 +76,6 @@ let regexExt = new RegExp(extraStrings.join("|"), "i"),
 let mForm = null;
 let mFormType = null;
 let password_field = null;
-
-
 
 let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
@@ -231,16 +197,3 @@ var checkForForms = function(callback) {
 }
 
 checkForForms(detectPageType);
-
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {   
-    if (request.isPresent) {
-        console.log("Password Exists");
-        alert("Remembrall : Already in Use! Choose a different password");
-        // notifyClient();
-        if(password_field != null) {
-            $(password_field).val("");
-            $(password_field).focus();
-        }
-    }
-});
