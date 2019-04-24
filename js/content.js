@@ -65,11 +65,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
 
 let extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
     signupStrings = ['signup', 'create account', 'register', 'sign up'],
-    buttonStrings = ['signup', 'create account', 'register', 'sign up', 'join'];
+    buttonStrings = ['signup', 'create account', 'register', 'sign up', 'join'],
+    loginStrings = ['login', 'log in'];
 
 let regexExt = new RegExp(extraStrings.join("|"), "i"),
     regex = new RegExp(signupStrings.join("|"), "i"),
-    regexButton = new RegExp(buttonStrings.join("|"), "i");
+    regexButton = new RegExp(buttonStrings.join("|"), "i"),
+    lregex = new RegExp(loginStrings.join("|"), "i");
 
 var signupForm = null;
 var loginForm = null;
@@ -151,9 +153,17 @@ var detectPageType = function (formsList) {
             containsExtra = false;
         if (method == 'post' || method == 'get') {
             if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
-                console.log("Page contains signup in id, action, name or classname");
-                mForm = form;
-                break;
+                console.log("Page contains SIGNUP in id, action, name or classname");
+                signupForm = {
+                    mForm : form,
+                    mFormType : 'signup'
+                };
+            } else if(lregex.test(id) || lregex.test(action) || lregex.test(name) || lregex.test(className)) {
+                console.log("Page contains LOGIN in id, action, name or classname");
+                loginForm = {
+                    mForm : form,
+                    mFormType : 'login'
+                };
             } else {
                 for (let j = 0, element; element = elements[j++];) {
                     let type = element.type;
