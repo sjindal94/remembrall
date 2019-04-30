@@ -47,7 +47,6 @@
         "lib/pouchdb-7.0.0.min.js",
         "lib/pbkdf2.js",
         "lib/pouchdb.find.js",
-        "js/content_utils.js",
         "js/bg_utils.js",
         "js/credential_store.js",
         "js/content.js"

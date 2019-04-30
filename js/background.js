@@ -19,8 +19,10 @@ let checkIfUrlExists = function (urlSet) {
                 console.log(maliciousUrls);
             } else
                 console.log(url + " exists");
-            if (count === urlSet.length)
+            if (count === urlSet.length) {
+                console.log(count, urlSet.length);
                 sendUrlsToClient('populateMalUrls', maliciousUrls);
+            }
         }).catch(function (err) {
             console.log(err);
         });
@@ -46,43 +48,23 @@ let isURLinWebStore = function (tabUrl) {
     //let matchDomain = getHostName(tabUrl);
     let fetchdomain = getDomain(tabUrl);
     if (fetchdomain != null) {
-        //console.log("New host name : " + matchDomain);
         console.log("New domain name : " + fetchdomain);
         webDb.find({
             selector: {
                 url: {$eq: fetchdomain}
             }
         }).then(function (result) {
-            userInput(result.docs.length, fetchdomain);
+            if (result.docs.length === 0) {
+                notifyClient("shouldWhitelistDomain");
+            } else {
+                console.log("URL in the Web Store");
+            }
+
         }).catch(function (err) {
             console.log(err);
         });
     }
 };
-
-/*
- * userInput() - call methods to add URL to WebDb() as per the user action
- *  @length: 1 - URL present in WebDb(), Do nothing
- *           0 - URL not in WebDb(), take the user input(retVal)
- *  @retVal: true  - add permanently to WebDb()
- *           false - dissmiss for now, Do nothing.                           
- */
-let userInput = function (length, DomainName) {
-    if (length === 0) {
-        console.log("URL not in the Web Store");
-        let retVal = confirm("Add this URL permanently to the Web Store?");
-        //window.open(tabUrl,'height=200,width=150');
-        if (retVal === true) {
-            console.log("UserInput: add URL to Web Store");
-            addToWebStore(DomainName);
-        } else {
-            console.log("UserInput: Do Not add URL to Web Store");
-        }
-    } else {
-        console.log("URL in the Web Store");
-    }
-};
-
 
 /*
  * addToWebStore() - add the DomainName to the WebDb()
@@ -162,7 +144,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log("Background recieved", request);
+    console.log("Message recieved", request);
     switch (request.type) {
         case 'set_val':
             chrome.storage.sync.get("is_on", function (data) {
