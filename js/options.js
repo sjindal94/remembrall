@@ -1,12 +1,12 @@
 // Saves options to chrome.storage
 function save_options() {
-    var userSetting = document.getElementById('useplugin').checked;
+    let userSetting = document.getElementById('useplugin').checked;
     console.log("Option Save");
     chrome.storage.sync.set({
         usePlugin: userSetting
     }, function () {
         // Update status to let user know options were saved.
-        var status = document.getElementById('status');
+        let status = document.getElementById('status');
         status.textContent = 'Options saved.';
         setTimeout(function () {
             status.textContent = '';

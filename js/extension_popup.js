@@ -1,10 +1,10 @@
-var IS_ON = false;
+let IS_ON = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Popup loaded");
     console.log(new Date().toLocaleTimeString());
 
-    var switchButton = document.getElementById('switch');
+    let switchButton = document.getElementById('switch');
     switchButton.addEventListener('click', () => {
         console.log("Toggle pressed");
         if (switchButton.checked) {
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    var getCacheButton = document.getElementById('getCache');
+    let getCacheButton = document.getElementById('getCache');
     getCacheButton.addEventListener('click', () => {
         chrome.storage.sync.get(null, function (data) {
             console.info("CURRENT CACHE DATA");
@@ -50,10 +50,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    var clearCacheButton = document.getElementById('clearCache');
+    let clearCacheButton = document.getElementById('clearCache');
     clearCacheButton.addEventListener('click', () => {
         chrome.storage.local.clear(function () {
-            var error = chrome.runtime.lastError;
+            let error = chrome.runtime.lastError;
             if (error) {
                 console.error("CLEAR CACHE:" + error);
             }
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("CLEAR CACHE: Cache cleared");
     });
 
-    var getDBDataButton = document.getElementById('getDBData');
+    let getDBDataButton = document.getElementById('getDBData');
     getDBDataButton.addEventListener('click', () => {
         console.log("Current DB data");
         chrome.runtime.sendMessage({type: "read_all_docs"}, function (response) {
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    var createDBButton = document.getElementById('createDB');
+    let createDBButton = document.getElementById('createDB');
     createDBButton.addEventListener('click', () => {
         console.log("Creating DB with dummy data");
         chrome.runtime.sendMessage({type: "create_db"}, function (response) {
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    var destroyDBButton = document.getElementById('destroyDB');
+    let destroyDBButton = document.getElementById('destroyDB');
     destroyDBButton.addEventListener('click', () => {
         console.log("Destroying DB");
         chrome.runtime.sendMessage({type: "destroy_db"}, function (response) {
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    var infoDBButton = document.getElementById('infoDB');
+    let infoDBButton = document.getElementById('infoDB');
     infoDBButton.addEventListener('click', () => {
         console.log("Info DB");
         chrome.runtime.sendMessage({type: "info_db"}, function (response) {
@@ -108,7 +108,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
             console.log(response.result);
         });
     } else if (details.reason === "update") {
-        var thisVersion = chrome.runtime.getManifest().version;
+        let thisVersion = chrome.runtime.getManifest().version;
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
     }
 });

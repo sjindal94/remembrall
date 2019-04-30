@@ -1,48 +1,6 @@
 let IS_ON = false;
 let password, url;
 
-
-// // match pattern for the URLs to redirect
-// var pattern = "https://google.com/*";
-
-// // cancel function returns an object
-// // which contains a property `cancel` set to `true`
-// function cancel(requestDetails) {
-//   console.log("Canceling: " + requestDetails.url);
-//   return {cancel: true};
-// }
-
-// // add the listener,
-// // passing the filter argument and "blocking"
-// chrome.webRequest.onBeforeRequest.addListener(
-//   cancel,
-//   {urls: ["<all_urls>"]},
-//   ["blocking"]
-// );
-
-
-// var pattern = "https://mozilla.org/*";
-// var filter = {urls: ["<all_urls>"]};
-// chrome.webRequest.onBeforeRequest.addListener(
-//     function(details) {
-//         chrome.tabs.query(
-//             {
-//              currentWindow: true,
-//              active: true
-//             },
-//             function (tabs)
-//             {
-//              //fetchfor = tabs.url;
-//              console.log(tabs);
-//             });
-//         console.log(tabs);
-//         return {cancel: true};//isURLinWebStore(details.url) != -1};
-//       },
-//     {urls: ["<all_urls>"]},
-//     ["blocking"]
-//   );
-
-
 let checkIfUrlExists = function (urlSet) {
     console.log('In isURLinWebStorePre');
     console.log("Check for these urls " + urlSet);
@@ -187,8 +145,8 @@ let tabListener = function () {
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (IS_ON && changeInfo.status === 'complete' && tab.active) {
-        var allLinks = document.links;
-        for (var i = 0; i < allLinks.length; i++) {
+        let allLinks = document.links;
+        for (let i = 0; i < allLinks.length; i++) {
             console.log("Link " + i + ": " + allLinks[i].href);
         }
 
@@ -266,31 +224,3 @@ document.addEventListener('DOMContentLoaded', function () {
     createCredentialStore();
     createWebStore();
 });
-
-
-// if (result.docs.length === 0) {
-
-//     console.log("Alexa Outside 10K");
-//     let retVal = confirm("Add this URL permanently to the Web Store?");
-//     //window.open(tabUrl,'height=200,width=150');
-
-//     if (retVal === true) {
-//         addToWebStore(matchDomain);
-//     } else {
-//         console.log("Dissmiss for Now");
-//     }
-//     //callback();
-// } else {
-//     console.log("");
-// }
-
-
-//console.log("Add to Alexa Database");
-// let doc = {
-//     "_id": hashString(matchDomain),
-//     "url": matchDomain
-// };
-
-// writeDocWebDb(doc);
-// //console.log("Added to store " + doc);
-// readDocWebDb(matchDomain);

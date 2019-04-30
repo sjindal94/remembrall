@@ -15,9 +15,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 }
                 //sendResponse({result: 'success'});
                 break;
+            case "shouldWhitelistDomain":
+                shouldWhitelistDomain(location.hostname);
+                break;
             case "fetchDomainname":
-                var domain = location.hostname;
-                chrome.extension.sendMessage({type: "URLinWebStore", domain: domain}, $.noop);
+                chrome.extension.sendMessage({type: "URLinWebStore", domain: location.hostname}, $.noop);
                 //sendResponse({result: 'success'});
                 break;
             case "detectPageType":
@@ -77,11 +79,11 @@ let regexExt = new RegExp(extraStrings.join("|"), "i"),
     regexButton = new RegExp(buttonStrings.join("|"), "i"),
     lregex = new RegExp(loginStrings.join("|"), "i");
 
-var signupForm = null;
-var loginForm = null;
-var currentForm = null;
+let signupForm = null;
+let loginForm = null;
+let currentForm = null;
 
-var currentURLs = new Set();
+let currentURLs = new Set();
 
 let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
@@ -94,7 +96,7 @@ let passwordInputListener = function (event) {
         console.log("None");
     console.log("passwordInputListener: ", password, url);
     chrome.runtime.sendMessage({type: "checkPasswordReuse", url: url, password: password}, $.noop);
-}
+};
 
 /**
  * This function binds our protection to any suitable input elements on the
@@ -102,34 +104,25 @@ let passwordInputListener = function (event) {
  * changes.
  */
 
-var monitorForm = function (formType) {
-    var found = false;
+let monitorForm = function (formType) {
     if (formType === 'signup') {
         for (let i = 0; i < signupForm.mForm.elements.length; i++) {
-            let type = signupForm.mForm.elements[i].type;
-            switch (signupForm.mForm.elements[i].type) {
-                case "password":
-                    signupForm.password_field = signupForm.mForm.elements[i];
-                    signupForm.mForm.elements[i].addEventListener("change", passwordInputListener);
-                    found = true;
-                    break;
+            if (signupForm.mForm.elements[i].type === "password") {
+                signupForm.password_field = signupForm.mForm.elements[i];
+                signupForm.mForm.elements[i].addEventListener("change", passwordInputListener);
+                break;
             }
-            if (found) break;
         }
     } else {
         for (let i = 0; i < loginForm.mForm.elements.length; i++) {
-            let type = loginForm.mForm.elements[i].type;
-            switch (loginForm.mForm.elements[i].type) {
-                case "password":
-                    loginForm.password_field = loginForm.mForm.elements[i];
-                    loginForm.mForm.elements[i].addEventListener("change", passwordInputListener);
-                    found = true;
-                    break;
+            if (loginForm.mForm.elements[i].type === "password") {
+                loginForm.password_field = loginForm.mForm.elements[i];
+                loginForm.mForm.elements[i].addEventListener("change", passwordInputListener);
+                break;
             }
-            if (found) break;
         }
     }
-}
+};
 
 function checkEmailElement(type, fieldName, className) {
     let fieldNameConditions = ["email", "id", "login"];
@@ -141,21 +134,21 @@ function checkEmailElement(type, fieldName, className) {
     return type === "email" || test1 || test2;
 }
 
-var detectPageType = function (formsList) {
+let detectPageType = function (formsList) {
     console.log("Detecting page type");
     for (let i = 0; i < formsList.length; i++) {
-        var form = formsList[i];
-        var method = form.method,
+        let form = formsList[i],
+            method = form.method,
             id = form.id,
             action = form.action,
             name = form.name,
             className = form.className,
-            elements = form.elements;
-        var containsEmail = false,
+            elements = form.elements,
+            containsEmail = false,
             containsPass = false,
             containsSelect = false,
             containsExtra = false;
-        if (method == 'post' || method == 'get') {
+        if (method === 'post' || method === 'get') {
             if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
                 console.log("Page contains SIGNUP in id, action, name or classname");
                 signupForm = {
@@ -216,8 +209,8 @@ var detectPageType = function (formsList) {
         if (signupForm.password_field != null) {
             $(signupForm.mForm).on("submit", function () {
                 console.log('submitting form');
-                var password = signupForm.password_field.value;
-                var url = window.location.hostname;
+                let password = signupForm.password_field.value;
+                let url = window.location.hostname;
                 chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
             });
         }
@@ -228,26 +221,26 @@ var detectPageType = function (formsList) {
         if (loginForm.password_field != null) {
             $(loginForm.mForm).on("submit", function () {
                 console.log('submitting form');
-                var password = loginForm.password_field.value;
-                var url = window.location.hostname;
+                let password = loginForm.password_field.value;
+                let url = window.location.hostname;
                 chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
             });
         }
     }
-}
+};
 
-var checkForForms = function (callback) {
-    var formsList = document.getElementsByTagName('form');
+let checkForForms = function (callback) {
+    let formsList = document.getElementsByTagName('form');
     fetchAllUrls();
     console.log("In checkForForms");
     setTimeout(function () {
         if (formsList.length > 0)
             callback(formsList);
     }, 1000);
-}
+};
 
-var fetchAllUrls = function () {
-    var urlList = document.getElementsByTagName('a');
+let fetchAllUrls = function () {
+    let urlList = document.getElementsByTagName('a');
     console.log("In fetchAllUrls");
     if (urlList != null) {
         for (let i = 0; i < urlList.length; i++) {
@@ -257,23 +250,21 @@ var fetchAllUrls = function () {
         console.log(currentURLs);
         chrome.runtime.sendMessage({type: "checkUrlInDB", currentURLs: Array.from(currentURLs)}, $.noop);
     }
-}
+};
 
-var checkIfExistsDB = function (hostname, href) {
+let shouldWhitelistDomain = function (hostname) {
     console.log('Intercepting onclick for anchor tag');
     let retVal = confirm("Add this URL permanently to the Web Store?");
     if (retVal === true) {
         console.log("UserInput: add URL to Web Store");
-        console.log(href);
         chrome.runtime.sendMessage({type: "addUrlToDB", hostname: hostname}, $.noop);
-        location.replace(href);
     } else {
         console.log("UserInput: Do Not add URL to Web Store");
     }
-}
+};
 
-var addListenerToMalUrls = function (maliciousUrls) {
-    var urlList = document.getElementsByTagName('a');
+let addListenerToMalUrls = function (maliciousUrls) {
+    let urlList = document.getElementsByTagName('a');
     console.log("In addListenerToMalUrls");
     if (maliciousUrls != null) {
         console.log(maliciousUrls);
@@ -283,11 +274,10 @@ var addListenerToMalUrls = function (maliciousUrls) {
             if (maliciousUrls.has(hostname)) {
                 urlList[i].href = "#";
                 urlList[i].onclick = function () {
-                    checkIfExistsDB(hostname, href);
+                    shouldWhitelistDomain(hostname);
+                    location.replace(href);
                 }
             }
         }
     }
-}
-
-// checkForForms(detectPageType);
+};

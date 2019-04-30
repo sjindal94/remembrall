@@ -8,7 +8,7 @@ function setSalt() {
     });
 }
 
-var hashString = function (string) {
+let hashString = function (string) {
     return CryptoJS.PBKDF2(string, salt, {keySize: 256 / 32, iterations: 1000}).toString();
 };
 
@@ -18,16 +18,16 @@ var hashString = function (string) {
 
 
 function getDomain(url) {
-    var hostName = getHostName(url);
-    var domain = hostName;
+    let hostName = getHostName(url);
+    let domain = hostName;
 
     if (hostName != null) {
-        var parts = hostName.split('.').reverse();
+        let parts = hostName.split('.').reverse();
 
         if (parts != null && parts.length > 1) {
             domain = parts[1] + '.' + parts[0];
 
-            if ((parts.length > 2 && parts[0].length == 2) ||
+            if ((parts.length > 2 && parts[0].length === 2) ||
                 (parts.length > 2 && parts[2].length > 2)) {
                 domain = parts[2] + '.' + domain;
             }
@@ -37,7 +37,7 @@ function getDomain(url) {
 }
 
 function getHostName(taburl) {
-    var match = taburl.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+    let match = taburl.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
     if (match != null && match.length > 2
         && typeof match[2] === 'string' && match[2].length > 0) {
         return match[2];
