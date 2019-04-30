@@ -240,7 +240,7 @@ var detectPageType = function (formsList) {
 
 var checkForForms = function(callback) {
     var formsList = document.getElementsByTagName('form');
-    // fetchAllUrls();
+    fetchAllUrls();
     console.log("In checkForForms");
     setTimeout(function() {
         if(formsList.length > 0)
@@ -254,12 +254,13 @@ var fetchAllUrls = function() {
     if(urlList != null) {
         console.log(urlList);
         for(let i = 0 ; i < urlList.length ; i++) {
-            console.log("Adding listener to " + urlList[i].hostname);
+            console.log("Adding listener to " + urlList[i].href);
             urlList[i].onclick = function() {
-                // chrome.runtime.sendMessage({type: "URLinWebStorePre", url: urlList[i].hostname}, $.noop);
+                console.log("1. Clicked url " + urlList[i]);
+                chrome.runtime.sendMessage({type: "URLinWebStorePre", url: urlList[i].href}, $.noop);
             }
         }
     }
 }
 
-checkForForms(detectPageType);
+// checkForForms(detectPageType);

@@ -4,13 +4,13 @@ let password, url;
 let isURLinWebStorePre = function (url) {
     console.log('In isURLinWebStorePre');
     let matchDomain = getHostName(url);
-    console.log(matchDomain);
+    console.log("3. " + matchDomain);
     webDb.find({
         selector: {
             url: {$eq: matchDomain}
         }
     }).then(function (result) {
-        console.log(result.docs.length);
+        console.log("4. length of returned docs " + result.docs.length);
         addUrlListener(result.docs.length, matchDomain);
     }).catch(function (err) {
         console.log(err);
@@ -166,6 +166,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             //sendResponse({result: ''});
             break;
         case 'URLinWebStorePre':
+            console.log("2. In bg-URLinWebStorePre " + request.url);
             isURLinWebStorePre(request.url);
             //sendResponse({result: ''});
             break;
