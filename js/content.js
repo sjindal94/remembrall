@@ -230,9 +230,9 @@ let processLinksinPage = function () {
     console.log("In processLinksinPage");
     if (urlList != null && urlList.length > 0) {
         for (let i = 0; i < urlList.length; i++) {
-            console.log("Before getDomain " + urlList[i].href);
+            // console.log("Before getDomain " + urlList[i].href);
             let tempURL = getDomain(urlList[i].href);
-            console.log("After getDomain " + tempURL)
+            // console.log("After getDomain " + tempURL)
             if(tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }
@@ -251,7 +251,7 @@ let processWebPage = function (callback) {
     }, 1000);
 };
 
-let shouldWhitelistDomain = function (hostname) {
+let shouldWhitelistDomain = function (hostname, href) {
     console.log('Intercepting onclick for anchor tag');
     let retVal = confirm("Add this URL permanently to the Web Store?");
     if (retVal === true) {
@@ -260,6 +260,7 @@ let shouldWhitelistDomain = function (hostname) {
     } else {
         console.log("UserInput: Do Not add URL to Web Store");
     }
+    location.replace(href);
 };
 
 let addListenerToMalUrls = function (maliciousUrls) {
@@ -272,8 +273,7 @@ let addListenerToMalUrls = function (maliciousUrls) {
             if (maliciousUrls.has(hostname)) {
                 urlList[i].href = "#";
                 urlList[i].onclick = function () {
-                    shouldWhitelistDomain(hostname);
-                    location.replace(href);
+                    shouldWhitelistDomain(hostname, href);
                 }
             }
         }
