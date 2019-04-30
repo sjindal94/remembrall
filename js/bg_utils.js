@@ -20,15 +20,15 @@ var hashString = function (string) {
 function getDomain(url) {
     var hostName = getHostName(url);
     var domain = hostName;
-    
+
     if (hostName != null) {
         var parts = hostName.split('.').reverse();
-        
+
         if (parts != null && parts.length > 1) {
             domain = parts[1] + '.' + parts[0];
 
-            if ((parts.length > 2 && parts[0].length == 2)  ||
-                 (parts.length > 2 && parts[2].length > 2)) {
+            if ((parts.length > 2 && parts[0].length == 2) ||
+                (parts.length > 2 && parts[2].length > 2)) {
                 domain = parts[2] + '.' + domain;
             }
         }
@@ -40,10 +40,6 @@ function getHostName(taburl) {
     var match = taburl.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
     if (match != null && match.length > 2
         && typeof match[2] === 'string' && match[2].length > 0) {
-        console.log("In getHostName " + match[2]);
-        //let parts = match[2].split(".");
-        //let result = parts[parts.length - 2] + "." + parts[parts.length - 1];
-        //return result;
         return match[2];
     } else {
         return null;
@@ -51,9 +47,7 @@ function getHostName(taburl) {
 }
 
 
-
-
-            /*if ((hostName.toLowerCase().indexOf('.co.uk') != -1 && parts.length > 2) || 
-            (hostName.toLowerCase().indexOf('.co.in') != -1 && parts.length > 2)) {
-              domain = parts[2] + '.' + domain;
-            } */
+/*if ((hostName.toLowerCase().indexOf('.co.uk') != -1 && parts.length > 2) ||
+(hostName.toLowerCase().indexOf('.co.in') != -1 && parts.length > 2)) {
+  domain = parts[2] + '.' + domain;
+} */

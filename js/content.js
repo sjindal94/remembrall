@@ -4,12 +4,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
         switch (request.action) {
             case "alertUser":
                 console.log("Password Exists");
-                if(currentForm === 'signup') {
+                if (currentForm === 'signup') {
                     alert("Remembrall : Already in Use! Choose a different password");
                     $(signupForm.password_field).val("");
                     $(signupForm.password_field).focus();
-                }
-                else if(currentForm === 'login') {
+                } else if (currentForm === 'login') {
                     alert("Remembrall : Input password belongs to some other website, possible phishing attack.");
                     $(loginForm.password_field).val("");
                     $(loginForm.password_field).focus();
@@ -87,12 +86,12 @@ var currentURLs = new Set();
 let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
     let url = window.location.hostname;
-    if(signupForm !== null && this === signupForm.password_field)
+    if (signupForm !== null && this === signupForm.password_field)
         currentForm = 'signup';
-    else if(loginForm !== null && this === loginForm.password_field)
+    else if (loginForm !== null && this === loginForm.password_field)
         currentForm = 'login';
     else
-        console.log("None");    
+        console.log("None");
     console.log("passwordInputListener: ", password, url);
     chrome.runtime.sendMessage({type: "checkPasswordReuse", url: url, password: password}, $.noop);
 }
@@ -105,7 +104,7 @@ let passwordInputListener = function (event) {
 
 var monitorForm = function (formType) {
     var found = false;
-    if(formType === 'signup') {
+    if (formType === 'signup') {
         for (let i = 0; i < signupForm.mForm.elements.length; i++) {
             let type = signupForm.mForm.elements[i].type;
             switch (signupForm.mForm.elements[i].type) {
@@ -115,10 +114,9 @@ var monitorForm = function (formType) {
                     found = true;
                     break;
             }
-            if(found) break;
+            if (found) break;
         }
-    }
-    else {
+    } else {
         for (let i = 0; i < loginForm.mForm.elements.length; i++) {
             let type = loginForm.mForm.elements[i].type;
             switch (loginForm.mForm.elements[i].type) {
@@ -128,7 +126,7 @@ var monitorForm = function (formType) {
                     found = true;
                     break;
             }
-            if(found) break;
+            if (found) break;
         }
     }
 }
@@ -140,13 +138,12 @@ function checkEmailElement(type, fieldName, className) {
     let test1 = fieldNameConditions.some(el => fieldName.includes(el));
     let test2 = classNameConditions.some(el => className.includes(el));
 
-    //console.log(test1, test2);
     return type === "email" || test1 || test2;
 }
 
 var detectPageType = function (formsList) {
     console.log("Detecting page type");
-    for (let i = 0 ; i < formsList.length; i++) {
+    for (let i = 0; i < formsList.length; i++) {
         var form = formsList[i];
         var method = form.method,
             id = form.id,
@@ -162,14 +159,14 @@ var detectPageType = function (formsList) {
             if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
                 console.log("Page contains SIGNUP in id, action, name or classname");
                 signupForm = {
-                    mForm : form,
-                    mFormType : 'signup'
+                    mForm: form,
+                    mFormType: 'signup'
                 };
-            } else if(lregex.test(id) || lregex.test(action) || lregex.test(name) || lregex.test(className)) {
+            } else if (lregex.test(id) || lregex.test(action) || lregex.test(name) || lregex.test(className)) {
                 console.log("Page contains LOGIN in id, action, name or classname");
                 loginForm = {
-                    mForm : form,
-                    mFormType : 'login'
+                    mForm: form,
+                    mFormType: 'login'
                 };
             } else {
                 for (let j = 0, element; element = elements[j++];) {
@@ -200,14 +197,14 @@ var detectPageType = function (formsList) {
                 if (containsEmail && containsPass && (containsExtra || containsSelect)) {
                     console.log("Signup page detected");
                     signupForm = {
-                        mForm : form,
-                        mFormType : 'signup'
+                        mForm: form,
+                        mFormType: 'signup'
                     }
                 } else if (containsEmail && containsPass) {
                     console.log("Login Page detected");
                     loginForm = {
-                        mForm : form,
-                        mFormType : 'login'
+                        mForm: form,
+                        mFormType: 'login'
                     }
                 }
             }
@@ -216,7 +213,7 @@ var detectPageType = function (formsList) {
 
     if (signupForm !== null) {
         monitorForm(signupForm.mFormType);
-        if(signupForm.password_field != null) {
+        if (signupForm.password_field != null) {
             $(signupForm.mForm).on("submit", function () {
                 console.log('submitting form');
                 var password = signupForm.password_field.value;
@@ -228,7 +225,7 @@ var detectPageType = function (formsList) {
 
     if (loginForm !== null) {
         monitorForm(loginForm.mFormType);
-        if(loginForm.password_field != null) {
+        if (loginForm.password_field != null) {
             $(loginForm.mForm).on("submit", function () {
                 console.log('submitting form');
                 var password = loginForm.password_field.value;
@@ -239,30 +236,30 @@ var detectPageType = function (formsList) {
     }
 }
 
-var checkForForms = function(callback) {
+var checkForForms = function (callback) {
     var formsList = document.getElementsByTagName('form');
     fetchAllUrls();
     console.log("In checkForForms");
-    setTimeout(function() {
-        if(formsList.length > 0)
+    setTimeout(function () {
+        if (formsList.length > 0)
             callback(formsList);
     }, 1000);
 }
 
-var fetchAllUrls = function() {
+var fetchAllUrls = function () {
     var urlList = document.getElementsByTagName('a');
     console.log("In fetchAllUrls");
-    if(urlList != null) {
-        for(let i = 0 ; i < urlList.length ; i++) {
+    if (urlList != null) {
+        for (let i = 0; i < urlList.length; i++) {
             let tempURL = getHostName(urlList[i].href);
             currentURLs.add(tempURL);
         }
         console.log(currentURLs);
-        chrome.runtime.sendMessage({type: "checkUrlInDB", currentURLs:  Array.from(currentURLs)}, $.noop);
+        chrome.runtime.sendMessage({type: "checkUrlInDB", currentURLs: Array.from(currentURLs)}, $.noop);
     }
 }
 
-var checkIfExistsDB = function(hostname, href) {
+var checkIfExistsDB = function (hostname, href) {
     console.log('Intercepting onclick for anchor tag');
     let retVal = confirm("Add this URL permanently to the Web Store?");
     if (retVal === true) {
@@ -275,17 +272,17 @@ var checkIfExistsDB = function(hostname, href) {
     }
 }
 
-var addListenerToMalUrls = function(maliciousUrls) {
+var addListenerToMalUrls = function (maliciousUrls) {
     var urlList = document.getElementsByTagName('a');
     console.log("In addListenerToMalUrls");
-    if(maliciousUrls != null) {
+    if (maliciousUrls != null) {
         console.log(maliciousUrls);
-        for(let i = 0 ; i < urlList.length ; i++) {
+        for (let i = 0; i < urlList.length; i++) {
             let href = urlList[i].href;
             let hostname = getHostName(href);
-            if(maliciousUrls.has(hostname)) {
+            if (maliciousUrls.has(hostname)) {
                 urlList[i].href = "#";
-                urlList[i].onclick = function() {
+                urlList[i].onclick = function () {
                     checkIfExistsDB(hostname, href);
                 }
             }

@@ -49,6 +49,10 @@ https://tech.trustpilot.com/what-i-learned-from-making-a-chrome-extension-51f366
 
 
 
+***
+Need to add   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+***
+
 
 Design Decisions for report:
 
@@ -57,3 +61,11 @@ Browser Actions are permanently displayed to the right of the address bar. These
 So we choose Browser action
 
 We are using current temperature for salting purposes
+
+
+
+
+
+Neat observations observed while working on the project
+
+1)  CSP blocks the inline scripts which we learnt from the class.

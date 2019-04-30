@@ -48,7 +48,7 @@ let checkIfUrlExists = function (urlSet) {
     console.log("Check for these urls " + urlSet);
     maliciousUrls = [];
     let count = 0;
-    for(let i = 0 ; i < urlSet.length ; i++) {
+    for (let i = 0; i < urlSet.length; i++) {
         webDb.find({
             selector: {
                 url: {$eq: urlSet[i]}
@@ -59,8 +59,7 @@ let checkIfUrlExists = function (urlSet) {
             if (result.docs.length === 0) {
                 maliciousUrls.push(urlSet[i]);
                 console.log(maliciousUrls);
-            }
-            else
+            } else
                 console.log(url + " exists");
             if (count === urlSet.length)
                 sendUrlsToClient('populateMalUrls', maliciousUrls);
@@ -68,7 +67,7 @@ let checkIfUrlExists = function (urlSet) {
             console.log(err);
         });
     }
-    
+
 };
 
 let sendUrlsToClient = function (action, maliciousUrls) {
@@ -88,7 +87,7 @@ let sendUrlsToClient = function (action, maliciousUrls) {
 let isURLinWebStore = function (tabUrl) {
     //let matchDomain = getHostName(tabUrl);
     let fetchdomain = getDomain(tabUrl);
-    if(fetchdomain != null) {
+    if (fetchdomain != null) {
         //console.log("New host name : " + matchDomain);
         console.log("New domain name : " + fetchdomain);
         webDb.find({
@@ -172,7 +171,8 @@ function isPasswordReuse(password, url, callback) {
     }).then(function (result) {
         console.log(result.docs);
         if (result.docs.length !== 0) {
-            callback("alertUser");
+            if (result.docs.url !== url)
+                callback("alertUser");
         }
     }).catch(function (err) {
         console.log("ouch, an error", err);
@@ -196,6 +196,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
             console.log("URL: " + tab.url);
         });
 
+        //TODO: Cannot notify Client twice like this
         notifyClient("detectPageType");
         //inspect the weblink by sending message to content.js
         notifyClient("fetchDomainname");
@@ -267,8 +268,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-
-
 // if (result.docs.length === 0) {
 
 //     console.log("Alexa Outside 10K");
@@ -276,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
 //     //window.open(tabUrl,'height=200,width=150');
 
 //     if (retVal === true) {
- //         addToWebStore(matchDomain);
+//         addToWebStore(matchDomain);
 //     } else {
 //         console.log("Dissmiss for Now");
 //     }
