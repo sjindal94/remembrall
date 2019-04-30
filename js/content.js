@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 break;
             case "populateMalUrls":
                 if (request.maliciousUrls.length !== 0)
-                addListenerToMalUrls(new Set(request.maliciousUrls));
+                    addListenerToMalUrls(new Set(request.maliciousUrls));
                 break;
             default:
                 console.log("Invalid action received");
@@ -79,6 +79,7 @@ let loginForm = null;
 let currentForm = null;
 
 let currentURLs = new Set();
+let urlList = null;
 
 let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
@@ -225,11 +226,13 @@ let detectPageType = function (formsList) {
 };
 
 let processLinksinPage = function () {
-    let urlList = document.getElementsByTagName('a');
+    urlList = document.getElementsByTagName('a');
     console.log("In processLinksinPage");
-    if (urlList != null) {
+    if (urlList != null && urlList.length > 0) {
         for (let i = 0; i < urlList.length; i++) {
-            let tempURL = getHostName(urlList[i].href);
+            console.log("Before getDomain " + urlList[i].href);
+            let tempURL = getDomain(urlList[i].href);
+            console.log("After getDomain " + tempURL)
             if(tempURL != null)
                 currentURLs.add(tempURL);
         }
@@ -260,13 +263,12 @@ let shouldWhitelistDomain = function (hostname) {
 };
 
 let addListenerToMalUrls = function (maliciousUrls) {
-    let urlList = document.getElementsByTagName('a');
     console.log("In addListenerToMalUrls");
     if (maliciousUrls != null) {
         console.log(maliciousUrls);
         for (let i = 0; i < urlList.length; i++) {
             let href = urlList[i].href;
-            let hostname = getHostName(href);
+            let hostname = getDomain(href);
             if (maliciousUrls.has(hostname)) {
                 urlList[i].href = "#";
                 urlList[i].onclick = function () {
