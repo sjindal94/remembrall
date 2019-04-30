@@ -233,7 +233,7 @@ let processLinksinPage = function () {
             console.log("Before getDomain " + urlList[i].href);
             let tempURL = getDomain(urlList[i].href);
             console.log("After getDomain " + tempURL)
-            if(tempURL != null)
+            if(tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }
         console.log(currentURLs);
