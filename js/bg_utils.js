@@ -21,7 +21,7 @@ function getDomain(url) {
     let hostName = getHostName(url);
     let domain = "";
 
-    if (hostName != null && hostname !== "") {
+    if (hostName != null) {
         let parts = hostName.split('.');
 
         if (parts != null && parts.length === 2) {
