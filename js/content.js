@@ -29,7 +29,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
             case "populateMalUrls":
                 console.log(request.maliciousUrls);
                 console.log("Received all malicious hostnames");
-                addListenerToMalUrls(new Set(request.maliciousUrls));
+                if (request.maliciousUrls.length != 0)
+                    addListenerToMalUrls(new Set(request.maliciousUrls));
                 break;
             default:
                 console.log("Invalid action received");
@@ -245,7 +246,8 @@ let fetchAllUrls = function () {
     if (urlList != null) {
         for (let i = 0; i < urlList.length; i++) {
             let tempURL = getHostName(urlList[i].href);
-            currentURLs.add(tempURL);
+            if(tempURL != null)
+                currentURLs.add(tempURL);
         }
         console.log(currentURLs);
         chrome.runtime.sendMessage({type: "checkUrlInDB", currentURLs: Array.from(currentURLs)}, $.noop);
@@ -260,6 +262,7 @@ let shouldWhitelistDomain = function (hostname) {
         chrome.runtime.sendMessage({type: "addUrlToDB", hostname: hostname}, $.noop);
     } else {
         console.log("UserInput: Do Not add URL to Web Store");
+        location.replace(href);
     }
 };
 
