@@ -1,6 +1,6 @@
 // listen for checkForWord request, call getTags which includes callback to sendResponse
 chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
-        console.log("Message received", request);
+        console.log("Message received");
         switch (request.action) {
             case "alertUser":
                 console.log("Password Exists");
@@ -27,6 +27,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 //sendResponse({result: 'success'});
                 break;
             case "populateMalUrls":
+                if (request.maliciousUrls.length != 0)
                 addListenerToMalUrls(new Set(request.maliciousUrls));
                 break;
             default:
@@ -251,7 +252,7 @@ let fetchAllUrls = function () {
 };
 
 let shouldWhitelistDomain = function (hostname) {
-    console.log('Confirming for Whitelisting');
+    console.log('Intercepting onclick for anchor tag');
     let retVal = confirm("Add this URL permanently to the Web Store?");
     if (retVal === true) {
         console.log("UserInput: add URL to Web Store");
