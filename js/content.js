@@ -230,7 +230,8 @@ let processLinksinPage = function () {
     if (urlList != null) {
         for (let i = 0; i < urlList.length; i++) {
             let tempURL = getHostName(urlList[i].href);
-            currentURLs.add(tempURL);
+            if(tempURL != null)
+                currentURLs.add(tempURL);
         }
         console.log(currentURLs);
         chrome.runtime.sendMessage({type: "checkDomainWhitelisting", currentURLs: Array.from(currentURLs)}, $.noop);
