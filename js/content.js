@@ -25,9 +25,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 checkForForms(detectPageType);
                 //sendResponse({result: 'success'});
                 break;
-            case "addUrlListener":
-                console.log(currentURL);
-                console.log("Needs addition of listener as it is not in Alexa db");
+            case "populateMalUrls":
+                console.log(request.maliciousUrls);
+                console.log("Received all malicious hostnames");
+                addListenerToMalUrls(new Set(request.maliciousUrls));
                 break;
             default:
                 console.log("Invalid action received");
@@ -81,7 +82,7 @@ var signupForm = null;
 var loginForm = null;
 var currentForm = null;
 
-var currentURL = null;
+var currentURLs = new Set();
 
 let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
@@ -252,12 +253,41 @@ var fetchAllUrls = function() {
     var urlList = document.getElementsByTagName('a');
     console.log("In fetchAllUrls");
     if(urlList != null) {
-        console.log(urlList);
         for(let i = 0 ; i < urlList.length ; i++) {
-            console.log("Adding listener to " + urlList[i].href);
-            urlList[i].onclick = function() {
-                console.log("1. Clicked url " + urlList[i]);
-                chrome.runtime.sendMessage({type: "URLinWebStorePre", url: urlList[i].href}, $.noop);
+            let tempURL = getHostName(urlList[i].href);
+            currentURLs.add(tempURL);
+        }
+        console.log(currentURLs);
+        chrome.runtime.sendMessage({type: "checkUrlInDB", currentURLs:  Array.from(currentURLs)}, $.noop);
+    }
+}
+
+var checkIfExistsDB = function(hostname, href) {
+    console.log('Intercepting onclick for anchor tag');
+    let retVal = confirm("Add this URL permanently to the Web Store?");
+    if (retVal === true) {
+        console.log("UserInput: add URL to Web Store");
+        console.log(href);
+        chrome.runtime.sendMessage({type: "addUrlToDB", hostname: hostname}, $.noop);
+        location.replace(href);
+    } else {
+        console.log("UserInput: Do Not add URL to Web Store");
+    }
+}
+
+var addListenerToMalUrls = function(maliciousUrls) {
+    var urlList = document.getElementsByTagName('a');
+    console.log("In addListenerToMalUrls");
+    if(maliciousUrls != null) {
+        console.log(maliciousUrls);
+        for(let i = 0 ; i < urlList.length ; i++) {
+            let href = urlList[i].href;
+            let hostname = getHostName(href);
+            if(maliciousUrls.has(hostname)) {
+                urlList[i].href = "#";
+                urlList[i].onclick = function() {
+                    checkIfExistsDB(hostname, href);
+                }
             }
         }
     }

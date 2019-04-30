@@ -1,35 +1,42 @@
 let IS_ON = false;
 let password, url;
 
-let isURLinWebStorePre = function (url) {
+let checkIfUrlExists = function (urlSet) {
     console.log('In isURLinWebStorePre');
-    let matchDomain = getHostName(url);
-    console.log("3. " + matchDomain);
-    webDb.find({
-        selector: {
-            url: {$eq: matchDomain}
-        }
-    }).then(function (result) {
-        console.log("4. length of returned docs " + result.docs.length);
-        addUrlListener(result.docs.length, matchDomain);
-    }).catch(function (err) {
-        console.log(err);
-    });
+    console.log("Check for these urls " + urlSet);
+    maliciousUrls = [];
+    let count = 0;
+    for(let i = 0 ; i < urlSet.length ; i++) {
+        webDb.find({
+            selector: {
+                url: {$eq: urlSet[i]}
+            }
+        }).then(function (result) {
+            count++;
+            console.log(count);
+            if (result.docs.length === 0) {
+                maliciousUrls.push(urlSet[i]);
+                console.log(maliciousUrls);
+            }
+            else
+                console.log(url + " exists");
+            if (count === urlSet.length)
+                sendUrlsToClient('populateMalUrls', maliciousUrls);
+        }).catch(function (err) {
+            console.log(err);
+        });
+    }
+    
 };
 
-let addUrlListener = function(length, matchDomain) {
-    if(length === 0) {
-        console.log(matchDomain + " does not exit in alexadb");
-        let retVal = confirm("Add this URL permanently to the Web Store?");
-        if (retVal === true) {
-            console.log("UserInput: add URL to Web Store");
-            addToWebStore(DomainName);
-        } else {
-            console.log("UserInput: Do Not add URL to Web Store");
-        }
-    }
-}
-
+let sendUrlsToClient = function (action, maliciousUrls) {
+    console.log("Sending message to Client: ", action);
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {action: action, maliciousUrls: maliciousUrls}, function (response) {
+            console.log("Response from web content: ", response);
+        });
+    });
+};
 
 /*
  * isURLinWebStore() - check for the URL in the WebDb(), if NOT,
@@ -165,10 +172,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             isURLinWebStore(sender.tab.url);
             //sendResponse({result: ''});
             break;
-        case 'URLinWebStorePre':
-            console.log("2. In bg-URLinWebStorePre " + request.url);
-            isURLinWebStorePre(request.url);
+        case 'checkUrlInDB':
+            checkIfUrlExists(request.currentURLs);
             //sendResponse({result: ''});
+            break;
+        case 'addUrlToDB':
+            addToWebStore(request.hostname);
             break;
         case 'checkPasswordReuse':
             console.log('In checkPasswordReuse');
