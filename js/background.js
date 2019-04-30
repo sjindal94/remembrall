@@ -171,7 +171,7 @@ function isPasswordReuse(password, url, callback) {
     }).then(function (result) {
         console.log(result.docs);
         if (result.docs.length !== 0) {
-            if (result.docs.url !== url)
+            if (result.docs[0].url !== url)
                 callback("alertUser");
         }
     }).catch(function (err) {
