@@ -25,6 +25,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 checkForForms(detectPageType);
                 //sendResponse({result: 'success'});
                 break;
+            case "addUrlListener":
+                console.log(currentURL);
+                console.log("Needs addition of listener as it is not in Alexa db");
+                break;
             default:
                 console.log("Invalid action received");
             //sendResponse({result: 'failure'});
@@ -76,6 +80,8 @@ let regexExt = new RegExp(extraStrings.join("|"), "i"),
 var signupForm = null;
 var loginForm = null;
 var currentForm = null;
+
+var currentURL = null;
 
 let passwordInputListener = function (event) {
     let password = event.currentTarget.value;
@@ -234,11 +240,26 @@ var detectPageType = function (formsList) {
 
 var checkForForms = function(callback) {
     var formsList = document.getElementsByTagName('form');
+    // fetchAllUrls();
     console.log("In checkForForms");
     setTimeout(function() {
         if(formsList.length > 0)
             callback(formsList);
     }, 1000);
+}
+
+var fetchAllUrls = function() {
+    var urlList = document.getElementsByTagName('a');
+    console.log("In fetchAllUrls");
+    if(urlList != null) {
+        console.log(urlList);
+        for(let i = 0 ; i < urlList.length ; i++) {
+            console.log("Adding listener to " + urlList[i].hostname);
+            urlList[i].onclick = function() {
+                // chrome.runtime.sendMessage({type: "URLinWebStorePre", url: urlList[i].hostname}, $.noop);
+            }
+        }
+    }
 }
 
 checkForForms(detectPageType);

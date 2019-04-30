@@ -15,7 +15,14 @@ function createWebStore() {
  */
 function initWebDb() {
     console.log("Initializing WebDb");
-    ReadCSVFile('csv/top10000.csv');
+    webDb.info().then(function (result) {
+        if(result.doc_count === 0)
+            ReadCSVFile('csv/top10000.csv');
+        else
+            console.log("Documents already exist!");
+      }).catch(function (err) {
+        console.log(err);
+      });   
 }
 
 

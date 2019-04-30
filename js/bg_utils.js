@@ -19,7 +19,10 @@ function getHostName(taburl) {
     var match = taburl.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
     if (match != null && match.length > 2
         && typeof match[2] === 'string' && match[2].length > 0) {
-        return match[2];
+        console.log("In getHostName " + match[2]);
+        let parts = match[2].split(".");
+        let result = parts[parts.length - 2] + "." + parts[parts.length - 1];
+        return result;
     } else {
         return null;
     }

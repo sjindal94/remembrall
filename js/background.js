@@ -1,6 +1,35 @@
 let IS_ON = false;
 let password, url;
 
+let isURLinWebStorePre = function (url) {
+    console.log('In isURLinWebStorePre');
+    let matchDomain = getHostName(url);
+    console.log(matchDomain);
+    webDb.find({
+        selector: {
+            url: {$eq: matchDomain}
+        }
+    }).then(function (result) {
+        console.log(result.docs.length);
+        addUrlListener(result.docs.length, matchDomain);
+    }).catch(function (err) {
+        console.log(err);
+    });
+};
+
+let addUrlListener = function(length, matchDomain) {
+    if(length === 0) {
+        console.log(matchDomain + " does not exit in alexadb");
+        let retVal = confirm("Add this URL permanently to the Web Store?");
+        if (retVal === true) {
+            console.log("UserInput: add URL to Web Store");
+            addToWebStore(DomainName);
+        } else {
+            console.log("UserInput: Do Not add URL to Web Store");
+        }
+    }
+}
+
 
 /*
  * isURLinWebStore() - check for the URL in the WebDb(), if NOT,
@@ -9,17 +38,19 @@ let password, url;
  */
 let isURLinWebStore = function (tabUrl) {
     let matchDomain = getHostName(tabUrl);
-    webDb.find({
-        selector: {
-            url: {$eq: matchDomain}
-        }
-    }).then(function (result) {
-        userInput(result.docs.length, matchDomain);
-    }).catch(function (err) {
-        console.log(err);
-    });
+    if(matchDomain != null) {
+        console.log("New host name : " + matchDomain);
+        webDb.find({
+            selector: {
+                url: {$eq: matchDomain}
+            }
+        }).then(function (result) {
+            userInput(result.docs.length, matchDomain);
+        }).catch(function (err) {
+            console.log(err);
+        });
+    }
 };
-
 
 /*
  * userInput() - call methods to add URL to WebDb() as per the user action
@@ -115,10 +146,8 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         });
 
         notifyClient("detectPageType");
-
         //inspect the weblink by sending message to content.js
         notifyClient("fetchDomainname");
-
     }
 });
 
@@ -134,6 +163,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'URLinWebStore':
             isURLinWebStore(sender.tab.url);
+            //sendResponse({result: ''});
+            break;
+        case 'URLinWebStorePre':
+            isURLinWebStorePre(request.url);
             //sendResponse({result: ''});
             break;
         case 'checkPasswordReuse':
