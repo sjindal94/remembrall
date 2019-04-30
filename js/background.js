@@ -1,6 +1,48 @@
 let IS_ON = false;
 let password, url;
 
+
+// // match pattern for the URLs to redirect
+// var pattern = "https://google.com/*";
+
+// // cancel function returns an object
+// // which contains a property `cancel` set to `true`
+// function cancel(requestDetails) {
+//   console.log("Canceling: " + requestDetails.url);
+//   return {cancel: true};
+// }
+
+// // add the listener,
+// // passing the filter argument and "blocking"
+// chrome.webRequest.onBeforeRequest.addListener(
+//   cancel,
+//   {urls: ["<all_urls>"]},
+//   ["blocking"]
+// );
+
+
+// var pattern = "https://mozilla.org/*";
+// var filter = {urls: ["<all_urls>"]};
+// chrome.webRequest.onBeforeRequest.addListener(
+//     function(details) {
+//         chrome.tabs.query(
+//             {
+//              currentWindow: true,
+//              active: true
+//             },
+//             function (tabs)
+//             {
+//              //fetchfor = tabs.url;
+//              console.log(tabs);
+//             });
+//         console.log(tabs);
+//         return {cancel: true};//isURLinWebStore(details.url) != -1};
+//       },
+//     {urls: ["<all_urls>"]},
+//     ["blocking"]
+//   );
+
+
 let isURLinWebStorePre = function (url) {
     console.log('In isURLinWebStorePre');
     let matchDomain = getHostName(url);
@@ -37,15 +79,17 @@ let addUrlListener = function(length, matchDomain) {
  * @tabURL: URL, the user presently inspecting.
  */
 let isURLinWebStore = function (tabUrl) {
-    let matchDomain = getHostName(tabUrl);
-    if(matchDomain != null) {
-        console.log("New host name : " + matchDomain);
+    //let matchDomain = getHostName(tabUrl);
+    let fetchdomain = getDomain(tabUrl);
+    if(fetchdomain != null) {
+        //console.log("New host name : " + matchDomain);
+        console.log("New domain name : " + fetchdomain);
         webDb.find({
             selector: {
-                url: {$eq: matchDomain}
+                url: {$eq: fetchdomain}
             }
         }).then(function (result) {
-            userInput(result.docs.length, matchDomain);
+            userInput(result.docs.length, fetchdomain);
         }).catch(function (err) {
             console.log(err);
         });
