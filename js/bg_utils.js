@@ -19,18 +19,19 @@ let hashString = function (string) {
 
 function getDomain(url) {
     let hostName = getHostName(url);
-    let domain = hostName;
+    let domain = "";
 
-    if (hostName != null) {
-        let parts = hostName.split('.').reverse();
+    if (hostName != null && hostname !== "") {
+        let parts = hostName.split('.');
 
-        if (parts != null && parts.length > 1) {
-            domain = parts[1] + '.' + parts[0];
-
-            if ((parts.length > 2 && parts[0].length === 2) ||
-                (parts.length > 2 && parts[2].length > 2)) {
-                domain = parts[2] + '.' + domain;
-            }
+        if (parts != null && parts.length === 2) {
+            domain = hostName;
+        } else if (parts[parts.length - 1].length === 2) {
+            domain = hostName;
+        } else if (parts.length > 2 && parts[parts.length-1].length > 2) {
+            for (let i = 1 ; i < parts.length - 1 ; i++)
+                domain = domain + parts[i] + ".";
+            domain = domain + parts[parts.length - 1];
         }
     }
     return domain;
