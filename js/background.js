@@ -3,6 +3,9 @@ let password, url;
 
 let checkIfUrlExists = function (urlSet) {
     console.log('In isURLinWebStorePre');
+    let rand = Math.random();
+    console.log(rand);
+    console.log(new Date().toLocaleTimeString());
     console.log("Check for these urls " + urlSet);
     maliciousUrls = [];
     let count = 0;
@@ -20,7 +23,8 @@ let checkIfUrlExists = function (urlSet) {
             } else
                 console.log(url + " exists");
             if (count === urlSet.length) {
-                console.log(count, urlSet.length);
+                console.log(count, urlSet.length, rand);
+                console.log(new Date().toLocaleTimeString());
                 sendUrlsToClient('populateMalUrls', maliciousUrls);
             }
         }).catch(function (err) {
@@ -136,10 +140,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
             console.log("URL: " + tab.url);
         });
 
-        //TODO: Cannot notify Client twice like this
-        notifyClient("detectPageType");
-        //inspect the weblink by sending message to content.js
-        notifyClient("fetchDomainname");
+        notifyClient("processWebPage");
     }
 });
 
@@ -157,11 +158,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             isURLinWebStore(sender.tab.url);
             //sendResponse({result: ''});
             break;
-        case 'checkUrlInDB':
+        case 'checkDomainWhitelisting':
             checkIfUrlExists(request.currentURLs);
             //sendResponse({result: ''});
             break;
-        case 'addUrlToDB':
+        case 'whiteListDomain':
             addToWebStore(request.hostname);
             break;
         case 'checkPasswordReuse':

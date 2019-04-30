@@ -18,16 +18,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
             case "shouldWhitelistDomain":
                 shouldWhitelistDomain(location.hostname);
                 break;
-            case "fetchDomainname":
-                chrome.extension.sendMessage({type: "URLinWebStore", domain: location.hostname}, $.noop);
-                //sendResponse({result: 'success'});
-                break;
-            case "detectPageType":
-                checkForForms(detectPageType);
+            case "processWebPage":
+                processWebPage(detectPageType);
                 //sendResponse({result: 'success'});
                 break;
             case "populateMalUrls":
-                if (request.maliciousUrls.length != 0)
+                if (request.maliciousUrls.length !== 0)
                 addListenerToMalUrls(new Set(request.maliciousUrls));
                 break;
             default:
@@ -228,27 +224,27 @@ let detectPageType = function (formsList) {
     }
 };
 
-let checkForForms = function (callback) {
-    let formsList = document.getElementsByTagName('form');
-    fetchAllUrls();
-    console.log("In checkForForms");
-    setTimeout(function () {
-        if (formsList.length > 0)
-            callback(formsList);
-    }, 1000);
-};
-
-let fetchAllUrls = function () {
+let processLinksinPage = function () {
     let urlList = document.getElementsByTagName('a');
-    console.log("In fetchAllUrls");
+    console.log("In processLinksinPage");
     if (urlList != null) {
         for (let i = 0; i < urlList.length; i++) {
             let tempURL = getHostName(urlList[i].href);
             currentURLs.add(tempURL);
         }
         console.log(currentURLs);
-        chrome.runtime.sendMessage({type: "checkUrlInDB", currentURLs: Array.from(currentURLs)}, $.noop);
+        chrome.runtime.sendMessage({type: "checkDomainWhitelisting", currentURLs: Array.from(currentURLs)}, $.noop);
     }
+};
+
+let processWebPage = function (callback) {
+    console.log("In processWebPage");
+    processLinksinPage();
+    let formsList = document.getElementsByTagName('form');
+    setTimeout(function () {
+        if (formsList.length > 0)
+            callback(formsList);
+    }, 1000);
 };
 
 let shouldWhitelistDomain = function (hostname) {
@@ -256,7 +252,7 @@ let shouldWhitelistDomain = function (hostname) {
     let retVal = confirm("Add this URL permanently to the Web Store?");
     if (retVal === true) {
         console.log("UserInput: add URL to Web Store");
-        chrome.runtime.sendMessage({type: "addUrlToDB", hostname: hostname}, $.noop);
+        chrome.runtime.sendMessage({type: "whiteListDomain", hostname: hostname}, $.noop);
     } else {
         console.log("UserInput: Do Not add URL to Web Store");
     }
