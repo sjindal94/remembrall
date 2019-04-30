@@ -53,6 +53,15 @@ function writeDocWebDb(doc) {
             //console.log(response);
             //console.log("Document Added to DB Successfully");
             //readDocAlexa("1");
+            webDb.createIndex({
+                index: {
+                  fields: ['url']
+                }
+            }).then(function (result) {
+                // handle result
+            }).catch(function (err) {
+                console.log(err);
+            });
         }
     });
 }
