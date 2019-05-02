@@ -1,6 +1,7 @@
+let iframe = null;
 // listen for checkForWord request, call getTags which includes callback to sendResponse
 chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
-        console.log("Message received");
+        console.log("Message received", request);
         switch (request.action) {
             case "alertUser":
                 console.log("Password Exists");
@@ -10,6 +11,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                     $(signupForm.password_field).focus();
                 } else if (currentForm === 'login') {
                     alert("Remembrall : Input password belongs to some other website, possible phishing attack.");
+                    //$(iframe).show();
                     $(loginForm.password_field).val("");
                     $(loginForm.password_field).focus();
                 }
@@ -19,6 +21,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 shouldWhitelistDomain(location.hostname);
                 break;
             case "processWebPage":
+                // iframe = document.createElement('iframe');
+                // iframe.src = chrome.extension.getURL("modal.html");
+                // iframe.width = "500px";
+                // iframe.height = "300px";
+                // iframe.id = "myFrame";
+                // iframe.style.position = "center";
+                // //$(iframe).hide();//necessary otherwise frame will be visible
+                // //$(iframe).appendTo("body");
+                // document.body.appendChild(iframe);
+                // $(iframe).hide();
+                // let modal = document.querySelector(".modal");
+                // let closeButton = document.querySelector(".close-button");
+                // function toggleModal() {
+                //     modal.classList.toggle("show-modal");
+                // }
+                // function windowOnClick(event) {
+                //     if (event.target === modal) {
+                //         toggleModal();
+                //     }
+                // }
+                // closeButton.addEventListener("click", toggleModal);
+                // window.addEventListener("click", windowOnClick);
+
                 processWebPage(detectPageType);
                 //sendResponse({result: 'success'});
                 break;

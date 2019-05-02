@@ -7,7 +7,7 @@ let checkIfUrlExists = function (urlSet) {
     console.log(rand);
     console.log(new Date().toLocaleTimeString());
     console.log("Check for these urls " + urlSet);
-    maliciousUrls = [];
+    let maliciousUrls = [];
     let count = 0;
     for (let i = 0; i < urlSet.length; i++) {
         webDb.find({
