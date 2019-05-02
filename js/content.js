@@ -108,11 +108,11 @@ let urlList = null;
  */
 
 let monitorForm = function (allForms) {
-    for(let ind = 0; ind < allForms.length; ind++){
+    for (let ind = 0; ind < allForms.length; ind++) {
         for (let i = 0; i < allForms[ind].mForm.elements.length; i++) {
             if (allForms[ind].mForm.elements[i].type === "password") {
                 allForms[ind].password_field = allForms[ind].mForm.elements[i];
-                allForms[ind].mForm.elements[i].addEventListener("change", function(){
+                allForms[ind].mForm.elements[i].addEventListener("change", function () {
 
                     let password = event.currentTarget.value;
                     currentFormIndex = ind;
@@ -197,14 +197,14 @@ let detectPageType = function (formsList) {
         }
     }
     monitorForm(allForms);
-    for (let form in allForms){
-        if(form.mFormType === 'signup'){
-            if (form.password_field != null) {
-                $(form.mForm).on("submit", function () {
+    for (let ind = 0; ind < allForms.length; ind++) {
+        if (allForms[ind].mFormType === 'signup') {
+            if (allForms[ind].password_field != null) {
+                $(allForms[ind].mForm).on("submit", function () {
                     console.log('submitting form');
-                    let password = form.password_field.value;
+                    let password = allForms[ind].password_field.value;
                     let url = window.location.hostname;
-                    chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
+                    chrome.runtime.sendMessage({type: "saveCredentials", url: url, password: password}, $.noop);
                 });
             }
         }
