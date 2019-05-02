@@ -111,12 +111,11 @@ let passwordInputListener = function (event) {
     let url = window.location.hostname;
     if (signupForm !== null && this === signupForm.password_field)
         currentForm = 'signup';
-    else if (loginForm !== null && this === loginForm.password_field)
-        currentForm = 'login';
     else
-        console.log("None");
+        currentForm = 'login';
+
     console.log("passwordInputListener: ", password, url);
-    chrome.runtime.sendMessage({type: "checkPasswordReuse", url: url, password: password}, $.noop);
+    chrome.runtime.sendMessage({type: "checkPasswordReuse", url: url, password: password, formType: currentForm}, $.noop);
 };
 
 /**
@@ -239,14 +238,6 @@ let detectPageType = function (formsList) {
 
     if (loginForm !== null) {
         monitorForm(loginForm.mFormType);
-        if (loginForm.password_field != null) {
-            $(loginForm.mForm).on("submit", function () {
-                console.log('submitting form');
-                let password = loginForm.password_field.value;
-                let url = window.location.hostname;
-                chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
-            });
-        }
     }
 };
 

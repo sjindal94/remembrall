@@ -106,7 +106,7 @@ let notifyClient = function (action) {
     });
 };
 
-function isPasswordReuse(password, url, callback) {
+function isPasswordReuse(password, url, formType, callback) {
     console.log("In isPasswordReuse " + password);
     credentialDb.find({
         selector: {
@@ -115,7 +115,9 @@ function isPasswordReuse(password, url, callback) {
     }).then(function (result) {
         console.log(result.docs);
         if (result.docs.length !== 0) {
-            if (result.docs[0].url !== url)
+            if (formType === 'signup')
+                callback("alertUser");
+            else if (formType === 'login' && result.docs[0].url !== url)
                 callback("alertUser");
         }
     }).catch(function (err) {
@@ -167,12 +169,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'checkPasswordReuse':
             console.log('In checkPasswordReuse');
-            isPasswordReuse(request.password, request.url, notifyClient);
+            isPasswordReuse(request.password, request.url, request.formType, notifyClient);
             //sendResponse({result: 'is duplicate'});
             //TODO:Optimise here use sendresponse instead of notifyclient
             break;
-        case 'addToDatabase':
-            console.log('In addToDatabase');
+        case 'saveCredentials':
+            console.log('In saveCredentials');
             password = request.password;
             url = request.url;
             chrome.tabs.onUpdated.addListener(tabListener);
