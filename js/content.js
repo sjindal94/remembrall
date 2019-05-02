@@ -5,16 +5,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
         switch (request.action) {
             case "alertUser":
                 console.log("Password Exists");
-                if (currentForm === 'signup') {
+                if (allForms[currentFormIndex].mFormType === 'signup') {
                     alert("Remembrall : Already in Use! Choose a different password");
-                    $(signupForm.password_field).val("");
-                    $(signupForm.password_field).focus();
-                } else if (currentForm === 'login') {
+                } else {
                     alert("Remembrall : Input password belongs to some other website, possible phishing attack.");
-                    //$(iframe).show();
-                    $(loginForm.password_field).val("");
-                    $(loginForm.password_field).focus();
                 }
+                $(allForms[currentFormIndex].password_field).val("");
+                $(allForms[currentFormIndex].password_field).focus();
                 //sendResponse({result: 'success'});
                 break;
             case "shouldWhitelistDomain":
@@ -99,29 +96,10 @@ let regexExt = new RegExp(extraStrings.join("|"), "i"),
     regexButton = new RegExp(buttonStrings.join("|"), "i"),
     lregex = new RegExp(loginStrings.join("|"), "i");
 
-let signupForm = null;
-let loginForm = null;
-let currentForm = null;
-
+let allForms = [];
+let currentFormIndex = null;
 let currentURLs = new Set();
 let urlList = null;
-
-let passwordInputListener = function (event) {
-    let password = event.currentTarget.value;
-    let url = window.location.hostname;
-    if (signupForm !== null && this === signupForm.password_field)
-        currentForm = 'signup';
-    else
-        currentForm = 'login';
-
-    console.log("passwordInputListener: ", password, url);
-    chrome.runtime.sendMessage({
-        type: "checkPasswordReuse",
-        url: url,
-        password: password,
-        formType: currentForm
-    }, $.noop);
-};
 
 /**
  * This function binds our protection to any suitable input elements on the
@@ -129,20 +107,22 @@ let passwordInputListener = function (event) {
  * changes.
  */
 
-let monitorForm = function (formType) {
-    if (formType === 'signup') {
-        for (let i = 0; i < signupForm.mForm.elements.length; i++) {
-            if (signupForm.mForm.elements[i].type === "password") {
-                signupForm.password_field = signupForm.mForm.elements[i];
-                signupForm.mForm.elements[i].addEventListener("change", passwordInputListener);
-                break;
-            }
-        }
-    } else {
-        for (let i = 0; i < loginForm.mForm.elements.length; i++) {
-            if (loginForm.mForm.elements[i].type === "password") {
-                loginForm.password_field = loginForm.mForm.elements[i];
-                loginForm.mForm.elements[i].addEventListener("change", passwordInputListener);
+let monitorForm = function (allForms) {
+    for(let ind = 0; ind < allForms.length; ind++){
+        for (let i = 0; i < allForms[ind].mForm.elements.length; i++) {
+            if (allForms[ind].mForm.elements[i].type === "password") {
+                allForms[ind].password_field = allForms[ind].mForm.elements[i];
+                allForms[ind].mForm.elements[i].addEventListener("change", function(){
+
+                    let password = event.currentTarget.value;
+                    currentFormIndex = ind;
+                    chrome.runtime.sendMessage({
+                        type: "checkPasswordReuse",
+                        url: window.location.hostname,
+                        password: password,
+                        formType: allForms[ind].mFormType
+                    }, $.noop);
+                });
                 break;
             }
         }
@@ -176,16 +156,10 @@ let detectPageType = function (formsList) {
         if (method === 'post' || method === 'get') {
             if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
                 console.log("Page contains SIGNUP in id, action, name or classname");
-                signupForm = {
-                    mForm: form,
-                    mFormType: 'signup'
-                };
+                allForms.push({mForm: form, mFormType: 'signup'});
             } else if (lregex.test(id) || lregex.test(action) || lregex.test(name) || lregex.test(className)) {
                 console.log("Page contains LOGIN in id, action, name or classname");
-                loginForm = {
-                    mForm: form,
-                    mFormType: 'login'
-                };
+                allForms.push({mForm: form, mFormType: 'login'});
             } else {
                 for (let j = 0, element; element = elements[j++];) {
                     let type = element.type;
@@ -214,35 +188,26 @@ let detectPageType = function (formsList) {
                 }
                 if (containsEmail && containsPass && (containsExtra || containsSelect)) {
                     console.log("Signup page detected");
-                    signupForm = {
-                        mForm: form,
-                        mFormType: 'signup'
-                    }
+                    allForms.push({mForm: form, mFormType: 'signup'});
                 } else if (containsEmail && containsPass) {
                     console.log("Login Page detected");
-                    loginForm = {
-                        mForm: form,
-                        mFormType: 'login'
-                    }
+                    allForms.push({mForm: form, mFormType: 'login'});
                 }
             }
         }
     }
-
-    if (signupForm !== null) {
-        monitorForm(signupForm.mFormType);
-        if (signupForm.password_field != null) {
-            $(signupForm.mForm).on("submit", function () {
-                console.log('submitting form');
-                let password = signupForm.password_field.value;
-                let url = window.location.hostname;
-                chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
-            });
+    monitorForm(allForms);
+    for (let form in allForms){
+        if(form.mFormType === 'signup'){
+            if (form.password_field != null) {
+                $(form.mForm).on("submit", function () {
+                    console.log('submitting form');
+                    let password = form.password_field.value;
+                    let url = window.location.hostname;
+                    chrome.runtime.sendMessage({type: "addToDatabase", url: url, password: password}, $.noop);
+                });
+            }
         }
-    }
-
-    if (loginForm !== null) {
-        monitorForm(loginForm.mFormType);
     }
 };
 
