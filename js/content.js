@@ -115,7 +115,12 @@ let passwordInputListener = function (event) {
         currentForm = 'login';
 
     console.log("passwordInputListener: ", password, url);
-    chrome.runtime.sendMessage({type: "checkPasswordReuse", url: url, password: password, formType: currentForm}, $.noop);
+    chrome.runtime.sendMessage({
+        type: "checkPasswordReuse",
+        url: url,
+        password: password,
+        formType: currentForm
+    }, $.noop);
 };
 
 /**
@@ -249,7 +254,7 @@ let processLinksinPage = function () {
             // console.log("Before getDomain " + urlList[i].href);
             let tempURL = getDomain(urlList[i].href);
             // console.log("After getDomain " + tempURL)
-            if(tempURL != null && tempURL !== "")
+            if (tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }
         console.log(currentURLs);

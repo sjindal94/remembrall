@@ -55,7 +55,7 @@ function writeDocWebDb(doc) {
             //readDocAlexa("1");
             webDb.createIndex({
                 index: {
-                  fields: ['url']
+                    fields: ['url']
                 }
             }).then(function (result) {
                 // handle result
