@@ -91,6 +91,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
             console.log(response.result);
         });
     } else if (details.reason === "update") {
+        console.log("This is a update!");
         let thisVersion = chrome.runtime.getManifest().version;
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
     }

@@ -1,22 +1,8 @@
 let iframe = null;
 // listen for checkForWord request, call getTags which includes callback to sendResponse
-chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log("Message received", request);
         switch (request.action) {
-            case "alertUser":
-                console.log("Password Exists");
-                if (allForms[currentFormIndex].mFormType === 'signup') {
-                    alert("Remembrall : Already in Use! Choose a different password");
-                } else {
-                    alert("Remembrall : Input password belongs to some other website, possible phishing attack.");
-                }
-                $(allForms[currentFormIndex].password_field).val("");
-                $(allForms[currentFormIndex].password_field).focus();
-                //sendResponse({result: 'success'});
-                break;
-            case "shouldWhitelistDomain":
-                shouldWhitelistDomain(location.hostname);
-                break;
             case "processWebPage":
                 // iframe = document.createElement('iframe');
                 // iframe.src = chrome.extension.getURL("modal.html");
@@ -42,17 +28,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
                 // window.addEventListener("click", windowOnClick);
 
                 processWebPage(detectPageType);
-                //sendResponse({result: 'success'});
-                break;
-            case "populateMalUrls":
-                if (request.maliciousUrls.length !== 0)
-                    addListenerToMalUrls(new Set(request.maliciousUrls));
+                sendResponse({result: 'success', currentUrl :location.hostname});
                 break;
             default:
                 console.log("Invalid action received");
-            //sendResponse({result: 'failure'});
+                sendResponse({result: 'failure'});
         }
-        // this is required to use sendResponse asynchronously
         return true;
     }
 );
@@ -121,7 +102,18 @@ let monitorForm = function (allForms) {
                         url: window.location.hostname,
                         password: password,
                         formType: allForms[ind].mFormType
-                    }, $.noop);
+                    }, function(response){
+                        console.log('checkPasswordReuse response: ', response);
+                        if(response === "alertUser") {
+                            if (allForms[currentFormIndex].mFormType === 'signup') {
+                                alert("Remembrall : Already in Use! Choose a different password");
+                            } else {
+                                alert("Remembrall : Input password belongs to some other website, possible phishing attack.");
+                            }
+                            $(allForms[currentFormIndex].password_field).val("");
+                            $(allForms[currentFormIndex].password_field).focus();
+                        }
+                    });
                 });
                 break;
             }
@@ -204,7 +196,9 @@ let detectPageType = function (formsList) {
                     console.log('submitting form');
                     let password = allForms[ind].password_field.value;
                     let url = window.location.hostname;
-                    chrome.runtime.sendMessage({type: "saveCredentials", url: url, password: password}, $.noop);
+                    chrome.runtime.sendMessage({type: "saveCredentials", url: url, password: password}, function(response){
+                        console.log('saveCredentials response: ', response);
+                    });
                 });
             }
         }
@@ -222,8 +216,11 @@ let processLinksinPage = function () {
             if (tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }
-        console.log(currentURLs);
-        chrome.runtime.sendMessage({type: "checkDomainWhitelisting", currentURLs: Array.from(currentURLs)}, $.noop);
+        chrome.runtime.sendMessage({type: "checkDomainWhitelisting", currentURLs: Array.from(currentURLs)}, function(maliciousUrls){
+            console.log(maliciousUrls);
+            if (maliciousUrls.length !== 0)
+                addListenerToMalUrls(new Set(maliciousUrls));
+        });
     }
 };
 
@@ -242,7 +239,9 @@ let shouldWhitelistDomain = function (hostname, href) {
     let retVal = confirm("Add this URL permanently to the Web Store?");
     if (retVal === true) {
         console.log("UserInput: add URL to Web Store");
-        chrome.runtime.sendMessage({type: "whiteListDomain", hostname: hostname}, $.noop);
+        chrome.runtime.sendMessage({type: "whiteListDomain", hostname: hostname}, function(response){
+            console.log('whiteListDomain response: ', response);
+        });
     } else {
         console.log("UserInput: Do Not add URL to Web Store");
     }

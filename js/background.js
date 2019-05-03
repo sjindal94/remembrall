@@ -1,12 +1,8 @@
 let IS_ON = false;
 let password, url;
 
-let checkIfUrlExists = function (urlSet) {
+let checkIfUrlExists = function (urlSet, callback) {
     console.log('In isURLinWebStorePre');
-    let rand = Math.random();
-    console.log(rand);
-    console.log(new Date().toLocaleTimeString());
-    console.log("Check for these urls " + urlSet);
     let maliciousUrls = [];
     let count = 0;
     for (let i = 0; i < urlSet.length; i++) {
@@ -23,51 +19,13 @@ let checkIfUrlExists = function (urlSet) {
             } else
                 console.log(url + " exists");
             if (count === urlSet.length) {
-                console.log(count, urlSet.length, rand);
-                console.log(new Date().toLocaleTimeString());
-                sendUrlsToClient('populateMalUrls', maliciousUrls);
+                callback(maliciousUrls);
             }
         }).catch(function (err) {
             console.log(err);
         });
     }
 
-};
-
-let sendUrlsToClient = function (action, maliciousUrls) {
-    console.log("Sending message to Client: ", action);
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {action: action, maliciousUrls: maliciousUrls}, function (response) {
-            console.log("Response from web content: ", response);
-        });
-    });
-};
-
-/*
- * isURLinWebStore() - check for the URL in the WebDb(), if NOT,
- *                     depending on the user Input add/dissmiss the URL.
- * @tabURL: URL, the user presently inspecting.
- */
-let isURLinWebStore = function (tabUrl) {
-    //let matchDomain = getHostName(tabUrl);
-    let fetchdomain = getDomain(tabUrl);
-    if (fetchdomain != null) {
-        console.log("New domain name : " + fetchdomain);
-        webDb.find({
-            selector: {
-                url: {$eq: fetchdomain}
-            }
-        }).then(function (result) {
-            if (result.docs.length === 0) {
-                notifyClient("shouldWhitelistDomain");
-            } else {
-                console.log("URL in the Web Store");
-            }
-
-        }).catch(function (err) {
-            console.log(err);
-        });
-    }
 };
 
 /*
@@ -97,14 +55,6 @@ let addToStore = function (password, url) {
     readAllDocs();
 };
 
-let notifyClient = function (action) {
-    console.log("Sending message to Client: ", action);
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {action: action}, function (response) {
-            console.log("Response from web content: ", response);
-        });
-    });
-};
 
 function isPasswordReuse(password, url, formType, callback) {
     console.log("In isPasswordReuse " + password);
@@ -119,6 +69,12 @@ function isPasswordReuse(password, url, formType, callback) {
                 callback("alertUser");
             else if (formType === 'login' && result.docs[0].url !== url)
                 callback("alertUser");
+            else {
+                callback("noReuse");
+            }
+        }
+        else {
+            callback("noReuse");
         }
     }).catch(function (err) {
         console.log("ouch, an error", err);
@@ -137,12 +93,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         for (let i = 0; i < allLinks.length; i++) {
             console.log("Link " + i + ": " + allLinks[i].href);
         }
-
-        chrome.tabs.getSelected(null, function (tab) {
-            console.log("URL: " + tab.url);
+        console.log("Sending message to Client: ", "processWebPage");
+        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {action: "processWebPage"}, function (response) {
+                console.log("Response from web content: ", response);
+            });
         });
-
-        notifyClient("processWebPage");
     }
 });
 
@@ -156,29 +112,26 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 //if(IS_ON) askContent();
             });
             break;
-        case 'URLinWebStore':
-            isURLinWebStore(sender.tab.url);
-            //sendResponse({result: ''});
-            break;
         case 'checkDomainWhitelisting':
-            checkIfUrlExists(request.currentURLs);
-            //sendResponse({result: ''});
+            console.log('checkDomainWhitelisting');
+            checkIfUrlExists(request.currentURLs, sendResponse);
+            //sendResponse({result: 'success'});
             break;
         case 'whiteListDomain':
+            console.log('whiteListDomain');
             addToWebStore(request.hostname);
+            sendResponse({result: 'success'});
             break;
         case 'checkPasswordReuse':
-            console.log('In checkPasswordReuse');
-            isPasswordReuse(request.password, request.url, request.formType, notifyClient);
-            //sendResponse({result: 'is duplicate'});
-            //TODO:Optimise here use sendresponse instead of notifyclient
+            console.log('checkPasswordReuse');
+            isPasswordReuse(request.password, request.url, request.formType, sendResponse);
             break;
         case 'saveCredentials':
-            console.log('In saveCredentials');
+            console.log('saveCredentials');
             password = request.password;
             url = request.url;
             chrome.tabs.onUpdated.addListener(tabListener);
-            //sendResponse({result: 'Added to DB'});
+            sendResponse({result: 'Added to DB'});
             break;
         case 'create_db':
             createCredentialStore();
@@ -198,6 +151,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         default:
             console.log("Invalid request type received");
+            sendResponse({result: 'failure'});
     }
     return true;
 });
