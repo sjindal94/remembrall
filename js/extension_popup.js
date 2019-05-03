@@ -9,27 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Toggle pressed");
         if (switchButton.checked) {
             console.log("ON");
-            chrome.browserAction.setIcon({
-                path: {
-                    "16": "icon/remembrallon_16x16.png",
-                    "19": "icon/remembrallon_19x19.png",
-                    "38": "icon/remembrallon_38x38.png",
-                    "48": "icon/remembrallon_48x48.png",
-                    "128": "icon/remembrallon_128x128.png"
-                }
-            });
+            chrome.browserAction.setIcon({path: "icon/remembrallon_128x128.png"});
             IS_ON = true;
         } else {
-
-            chrome.browserAction.setIcon({
-                path: {
-                    "16": "icon/remembralloff_16x16.png",
-                    "19": "icon/remembralloff_19x19.png",
-                    "38": "icon/remembralloff_38x38.png",
-                    "48": "icon/remembralloff_48x48.png",
-                    "128": "icon/remembralloff_128x128.png"
-                }
-            });
+            chrome.browserAction.setIcon({path: "icon/remembralloff_128x128.png"});
             IS_ON = false;
         }
         chrome.storage.sync.set({"is_on": IS_ON}, function () {

@@ -10,14 +10,11 @@
     "default_title": "Click to set behaviour of Remembrall",
     "default_popup": "extension_popup.html",
     "default_icon": {
-      "16": "icon/remembralloff_16x16.png",
-      "19": "icon/remembralloff_19x19.png",
-      "32": "icon/remembralloff_32x32.png",
-      "38": "icon/remembralloff_38x38.png",
-      "48": "icon/remembralloff_48x48.png",
-      "64": "icon/remembralloff_64x64.png",
       "128": "icon/remembralloff_128x128.png"
     }
+  },
+  "icons": {
+    "128": "icon/remembrallon_128x128.png"
   },
   "background": {
     "scripts": [
