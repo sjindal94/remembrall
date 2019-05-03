@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 // window.addEventListener("click", windowOnClick);
 
                 processWebPage(detectPageType);
-                sendResponse({result: 'success', currentUrl :location.hostname});
+                sendResponse({result: 'success', currentUrl: location.hostname});
                 break;
             default:
                 console.log("Invalid action received");
@@ -102,9 +102,9 @@ let monitorForm = function (allForms) {
                         url: window.location.hostname,
                         password: password,
                         formType: allForms[ind].mFormType
-                    }, function(response){
+                    }, function (response) {
                         console.log('checkPasswordReuse response: ', response);
-                        if(response === "alertUser") {
+                        if (response === "alertUser") {
                             if (allForms[currentFormIndex].mFormType === 'signup') {
                                 alert("Remembrall : Already in Use! Choose a different password");
                             } else {
@@ -196,7 +196,11 @@ let detectPageType = function (formsList) {
                     console.log('submitting form');
                     let password = allForms[ind].password_field.value;
                     let url = window.location.hostname;
-                    chrome.runtime.sendMessage({type: "saveCredentials", url: url, password: password}, function(response){
+                    chrome.runtime.sendMessage({
+                        type: "saveCredentials",
+                        url: url,
+                        password: password
+                    }, function (response) {
                         console.log('saveCredentials response: ', response);
                     });
                 });
@@ -216,7 +220,10 @@ let processLinksinPage = function () {
             if (tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }
-        chrome.runtime.sendMessage({type: "checkDomainWhitelisting", currentURLs: Array.from(currentURLs)}, function(maliciousUrls){
+        chrome.runtime.sendMessage({
+            type: "checkDomainWhitelisting",
+            currentURLs: Array.from(currentURLs)
+        }, function (maliciousUrls) {
             console.log(maliciousUrls);
             if (maliciousUrls.length !== 0)
                 addListenerToMalUrls(new Set(maliciousUrls));
@@ -239,7 +246,7 @@ let shouldWhitelistDomain = function (hostname, href) {
     let retVal = confirm("Add this URL permanently to the Web Store?");
     if (retVal === true) {
         console.log("UserInput: add URL to Web Store");
-        chrome.runtime.sendMessage({type: "whiteListDomain", hostname: hostname}, function(response){
+        chrome.runtime.sendMessage({type: "whiteListDomain", hostname: hostname}, function (response) {
             console.log('whiteListDomain response: ', response);
         });
     } else {

@@ -72,8 +72,7 @@ function isPasswordReuse(password, url, formType, callback) {
             else {
                 callback("noReuse");
             }
-        }
-        else {
+        } else {
             callback("noReuse");
         }
     }).catch(function (err) {
