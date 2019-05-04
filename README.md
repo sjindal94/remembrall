@@ -1,5 +1,5 @@
 # remembrall
-**Chrome extension for a password manager that warns user for password reuse, phishing attacks, and malicious links.**
+Chrome extension for a password manager that warns user for password reuse, phishing attacks, and malicious links.**
 
 ## Getting Started
 
@@ -23,9 +23,9 @@ To run the thing, these are the exact steps
 
 ## Authors
 
-* [**Shubham Jindal**](https://github.com/sjindal94)
-* **Aniridh Kulkarni**
-* **Shivasagar Boraiah**
+* [Shubham Jindal](https://github.com/sjindal94)
+* Anirudh Kulkarni
+* Shivasagar Boraiah**
 
 ## License
 
