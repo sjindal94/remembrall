@@ -25,7 +25,7 @@ To run the thing, these are the exact steps
 
 * [Shubham Jindal](https://github.com/sjindal94)
 * Anirudh Kulkarni
-* Shivasagar Boraiah**
+* Shivasagar Boraiah
 
 ## License
 
