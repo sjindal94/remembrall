@@ -22,7 +22,7 @@ External dependencies:
 * [Pouchdb](https://pouchdb.com/api.html)
 * [pouchdb.find](https://github.com/nolanlawson/pouchdb-find)
 
-### Core Logic
+## Core Logic
 * Detecting Signup Page
 
 * Detecting Login Page
@@ -40,7 +40,7 @@ Remembrall stores its data in JSON documents like so:
 
 There are two scehemas that are initialised during the initial setup. One schema to store the credentials of the user and the other for whitelisted URLs. 
 
-### Testing
+## Testing
 A number of manual tests was performed to make sure the app is working as expected and is responsive accross different websites.
 * Checked the signup detection across majority of the popular websites. (Task 1)
 * Checked the login detection across majority of the popular websites. (Task 2)
