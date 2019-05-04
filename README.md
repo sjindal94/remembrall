@@ -38,7 +38,7 @@ Remembrall stores its data in JSON documents like so:
  }
 ```
 
-There are two scehemas that are initialised during the initial setup. One schema to store the credentials of the user and the other for whitelisted URLs. 
+There are two schemas that are initialised during the initial extension setup. One schema to store the credentials of the user and the other for whitelisted URLs. 
 
 ## Testing
 A number of manual tests was performed to make sure the app is working as expected and is responsive accross different websites.
