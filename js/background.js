@@ -3,7 +3,7 @@ let password, url;
 
 let checkIfUrlExists = function (urlSet, callback) {
     console.log('In checkIfUrlExists');
-    let maliciousUrls = [];
+    let maliciousLinks = [];
     let count = 0;
     for (let i = 0; i < urlSet.length; i++) {
         console.log('Searching for : ' + urlSet[i]);
@@ -34,6 +34,7 @@ let checkIfUrlExists = function (urlSet, callback) {
  * addToWebStore() - add the DomainName to the WebDb()
  */
 let addToWebStore = function (DomainName) {
+    console.log("Adding domain to Web Store: ", DomainName);
     let doc = {
         "_id": hashString(DomainName),
         "url": DomainName

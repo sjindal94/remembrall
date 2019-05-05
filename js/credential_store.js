@@ -30,7 +30,7 @@ function writeBulkDocs(docs) {
             console.log("Documents created Successfully");
         }
     });
-    readAllDocs();
+    //readAllDocs();
 }
 
 function readDoc(_id) {

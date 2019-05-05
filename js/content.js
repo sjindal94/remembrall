@@ -43,7 +43,6 @@ let regexExt = new RegExp(extraStrings.join("|"), "i"),
 let allForms = [];
 let currentFormIndex = null;
 let currentURLs = new Set();
-let urlList = null;
 
 /**
  * This function binds our protection to any suitable input elements on the
@@ -171,22 +170,20 @@ let detectPageType = function (formsList) {
 };
 
 let processLinksinPage = function () {
-    urlList = document.getElementsByTagName('a');
-    console.log("In processLinksinPage");
+    let urlList = document.getElementsByTagName('a');
     if (urlList != null && urlList.length > 0) {
         for (let i = 0; i < urlList.length; i++) {
             let tempURL = getDomain(urlList[i].href);
             if (tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }
-        console.log("Links in the page: ", currentURLs);
+        console.log("All Links: ", currentURLs);
         chrome.runtime.sendMessage({
             type: "checkDomainWhitelisting",
             currentURLs: Array.from(currentURLs)
-        }, function (maliciousUrls) {
-            console.log(maliciousUrls);
-            if (maliciousUrls.length !== 0)
-                addListenerToMalUrls(new Set(maliciousUrls));
+        }, function (maliciousLinks) {
+            if (maliciousLinks.length !== 0)
+                addListenerToMalUrls(new Set(maliciousLinks), urlList);
         });
     }
 };
@@ -195,14 +192,11 @@ let processWebPage = function (callback) {
     console.log("In processWebPage");
     processLinksinPage();
     let formsList = document.getElementsByTagName('form');
-    setTimeout(function () {
-        if (formsList.length > 0)
-            callback(formsList);
-    }, 1000);
+    if (formsList.length > 0)
+        callback(formsList);
 };
 
 let shouldWhitelistDomain = function (hostname, href) {
-    console.log('Intercepting onclick for anchor tag');
     let retVal = confirm("Remembrall Warning: Outside of the Alexa top 10K websites.\nAdd this URL permanently to the Web Store?");
     if (retVal === true) {
         console.log("UserInput: add URL to Web Store");
@@ -215,14 +209,14 @@ let shouldWhitelistDomain = function (hostname, href) {
     location.replace(href);
 };
 
-let addListenerToMalUrls = function (maliciousUrls) {
+let addListenerToMalUrls = function (maliciousLinks, urlList) {
     console.log("In addListenerToMalUrls");
-    if (maliciousUrls != null) {
-        console.log(maliciousUrls);
+    if (maliciousLinks != null) {
+        console.log("Malicious Links: ", maliciousLinks);
         for (let i = 0; i < urlList.length; i++) {
             let href = urlList[i].href;
             let hostname = getDomain(href);
-            if (maliciousUrls.has(hostname)) {
+            if (maliciousLinks.has(hostname)) {
                 urlList[i].href = "#";
                 urlList[i].onclick = function () {
                     shouldWhitelistDomain(hostname, href);

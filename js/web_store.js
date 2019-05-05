@@ -46,7 +46,7 @@ const ReadCSVFile = async file => {
  */
 function writeDocWebDb(doc) {
     if (webDb == null) console.log("DB Does not exist");
-    else webDb.put(doc, function (err, response) {
+    else webDb.put(doc, function (err) {
         if (err) {
             return console.log(err);
         } else {
@@ -90,14 +90,14 @@ function readAllDocsWebDb() {
  */
 function writeBulkDocsWebDb(docs) {
     if (webDb == null) console.log("DB Does not exist");
-    else webDb.bulkDocs(docs, function (err, response) {
+    else webDb.bulkDocs(docs, function (err) {
         if (err) {
             return console.log(err);
         } else {
             console.log("Documents created Successfully");
         }
     });
-    readAllDocsWebDb();
+    //readAllDocsWebDb();
 }
 
 
