@@ -3,7 +3,7 @@ let password, url;
 
 let checkIfUrlExists = function (urlSet, callback) {
     console.log('In checkIfUrlExists');
-    let maliciousUrls = [];
+    let maliciousLinks = [];
     let count = 0;
     for (let i = 0; i < urlSet.length; i++) {
         webDb.find({
@@ -13,11 +13,11 @@ let checkIfUrlExists = function (urlSet, callback) {
         }).then(function (result) {
             count++;
             if (result.docs.length === 0) {
-                maliciousUrls.push(urlSet[i]);
+                maliciousLinks.push(urlSet[i]);
             }
             if (count === urlSet.length) {
-                console.log("List of malicious URLS: ", maliciousUrls);
-                callback(maliciousUrls);
+                console.log("List of malicious Links: ", maliciousLinks);
+                callback(maliciousLinks);
             }
         }).catch(function (err) {
             console.log(err);
@@ -30,6 +30,7 @@ let checkIfUrlExists = function (urlSet, callback) {
  * addToWebStore() - add the DomainName to the WebDb()
  */
 let addToWebStore = function (DomainName) {
+    console.log("Adding domain to Web Store: ", DomainName);
     let doc = {
         "_id": hashString(DomainName),
         "url": DomainName

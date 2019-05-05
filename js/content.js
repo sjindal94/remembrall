@@ -43,7 +43,6 @@ let regexExt = new RegExp(extraStrings.join("|"), "i"),
 let allForms = [];
 let currentFormIndex = null;
 let currentURLs = new Set();
-let urlList = null;
 
 /**
  * This function binds our protection to any suitable input elements on the
@@ -171,7 +170,7 @@ let detectPageType = function (formsList) {
 };
 
 let processLinksinPage = function () {
-    urlList = document.getElementsByTagName('a');
+    let urlList = document.getElementsByTagName('a');
     console.log("In processLinksinPage");
     if (urlList != null && urlList.length > 0) {
         for (let i = 0; i < urlList.length; i++) {
@@ -183,10 +182,10 @@ let processLinksinPage = function () {
         chrome.runtime.sendMessage({
             type: "checkDomainWhitelisting",
             currentURLs: Array.from(currentURLs)
-        }, function (maliciousUrls) {
-            console.log(maliciousUrls);
-            if (maliciousUrls.length !== 0)
-                addListenerToMalUrls(new Set(maliciousUrls));
+        }, function (maliciousLinks) {
+            console.log("Malicious Links: ", maliciousLinks);
+            if (maliciousLinks.length !== 0)
+                addListenerToMalUrls(new Set(maliciousLinks), urlList);
         });
     }
 };
@@ -215,14 +214,14 @@ let shouldWhitelistDomain = function (hostname, href) {
     location.replace(href);
 };
 
-let addListenerToMalUrls = function (maliciousUrls) {
+let addListenerToMalUrls = function (maliciousLinks, urlList) {
     console.log("In addListenerToMalUrls");
-    if (maliciousUrls != null) {
-        console.log(maliciousUrls);
+    if (maliciousLinks != null) {
+        console.log("Malicious Links: ", maliciousLinks);
         for (let i = 0; i < urlList.length; i++) {
             let href = urlList[i].href;
             let hostname = getDomain(href);
-            if (maliciousUrls.has(hostname)) {
+            if (maliciousLinks.has(hostname)) {
                 urlList[i].href = "#";
                 urlList[i].onclick = function () {
                     shouldWhitelistDomain(hostname, href);
