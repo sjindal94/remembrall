@@ -1,4 +1,4 @@
-let iframe = null;
+//let iframe = null;
 // listen for checkForWord request, call getTags which includes callback to sendResponse
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log("Message received", request);
@@ -26,9 +26,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 // }
                 // closeButton.addEventListener("click", toggleModal);
                 // window.addEventListener("click", windowOnClick);
-
+                sendResponse({result: 'success'});
                 processWebPage(detectPageType);
-                sendResponse({result: 'success', currentUrl: location.hostname});
                 break;
             default:
                 console.log("Invalid action received");

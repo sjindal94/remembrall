@@ -2,9 +2,22 @@ let salt = "dummy";
 
 //API Keys should not be posted in git but since this is private repo we are doing it
 function setSalt() {
-    $.getJSON("https://api.openweathermap.org/data/2.5/weather?q=London&APPID=f914ac022b86c488ee5274cd00131458", function (json) {
-        console.log(JSON.stringify(json));
-        salt = JSON.stringify(json);
+    console.log("setting salt");
+    chrome.storage.sync.get("salt", function (data) {
+        console.log(data);
+        if(data.values === undefined){
+            console.log("data is null");
+            $.getJSON("https://api.openweathermap.org/data/2.5/weather?q=London&APPID=f914ac022b86c488ee5274cd00131458", function (json) {
+                console.log(JSON.stringify(json));
+                salt = JSON.stringify(json);
+                chrome.storage.sync.set({"salt": salt}, function () {
+                    console.log('Salt Saved', "salt", salt);
+                });
+            });
+        } else {
+            console.log("data is not null");
+            salt = data['salt'];
+        }
     });
 }
 

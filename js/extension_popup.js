@@ -98,25 +98,3 @@ chrome.runtime.onInstalled.addListener(function (details) {
 });
 
 //may delete db onSuspend of runtime
-//also check how and why to convert background pageinto an event page
-
-
-//
-// // Add listener to receive messages from background page
-// chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-//     switch (request.type)
-//     {
-//         case 'get_val':
-//             console.log("POPUP");
-//             chrome.runtime.sendMessage({type: "set_val", data: IS_ON},function(response) {
-//                 console.log(response.result);
-//             });
-//             break;
-//     }
-// });
-
-// chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//     chrome.tabs.sendMessage(tabs[0].id, {type: 'set_val', data: IS_ON}, function(response) {
-//         console.log(response.result);
-//     });
-// });
