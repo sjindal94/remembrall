@@ -50,17 +50,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
  *              and atleast 1 other non hidden input type with name in
  *                  ['first name', 'mobile number', 'phone number', 'last name', 'name', 'gender', 'dob', 'birth', 'date']
  *
- * Works for :
- *      - Facebook      : https://www.facebook.com/
- *      - Yahoo         : https://login.yahoo.com/account/create?src=fpctx&intl=us&lang=en-US&done=https%3A%2F%2Fwww.yahoo.com&specId=yidReg
- *      - Google        : https://accounts.google.com/signup/v2/webcreateaccount?hl=en-GB&flowName=GlifWebSignIn&flowEntry=SignUp&nogm=true
- *      - Github        : https://github.com/
- *      - Linkedin      : https://www.linkedin.com/
- *      - Reddit        : https://www.reddit.com/
- *      - Twilio        : https://www.twilio.com/try-twilio
- *      - Amazon        :
- *      -
- *
  * Does not work for :
  *      - Instacart
  *      - Apple
@@ -107,7 +96,7 @@ let monitorForm = function (allForms) {
                             if (allForms[currentFormIndex].mFormType === 'signup') {
                                 alert("Remembrall : Already in Use! Choose a different password");
                             } else {
-                                alert("Remembrall : Input password belongs to some other website, possible phishing attack.");
+                                alert("Remembrall : Input password belongs to some other website.\n Possible phishing attack!");
                             }
                             $(allForms[currentFormIndex].password_field).val("");
                             $(allForms[currentFormIndex].password_field).focus();
@@ -243,7 +232,7 @@ let processWebPage = function (callback) {
 
 let shouldWhitelistDomain = function (hostname, href) {
     console.log('Intercepting onclick for anchor tag');
-    let retVal = confirm("Add this URL permanently to the Web Store?");
+    let retVal = confirm("Remembrall Warning: Outside of the Alexa top 10K websites.\nAdd this URL permanently to the Web Store?");
     if (retVal === true) {
         console.log("UserInput: add URL to Web Store");
         chrome.runtime.sendMessage({type: "whiteListDomain", hostname: hostname}, function (response) {
