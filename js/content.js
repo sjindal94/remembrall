@@ -2,36 +2,12 @@
 // listen for checkForWord request, call getTags which includes callback to sendResponse
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log("Message received", request);
-        switch (request.action) {
-            case "processWebPage":
-                // iframe = document.createElement('iframe');
-                // iframe.src = chrome.extension.getURL("modal.html");
-                // iframe.width = "500px";
-                // iframe.height = "300px";
-                // iframe.id = "myFrame";
-                // iframe.style.position = "center";
-                // //$(iframe).hide();//necessary otherwise frame will be visible
-                // //$(iframe).appendTo("body");
-                // document.body.appendChild(iframe);
-                // $(iframe).hide();
-                // let modal = document.querySelector(".modal");
-                // let closeButton = document.querySelector(".close-button");
-                // function toggleModal() {
-                //     modal.classList.toggle("show-modal");
-                // }
-                // function windowOnClick(event) {
-                //     if (event.target === modal) {
-                //         toggleModal();
-                //     }
-                // }
-                // closeButton.addEventListener("click", toggleModal);
-                // window.addEventListener("click", windowOnClick);
-                sendResponse({result: 'success'});
-                processWebPage(detectPageType);
-                break;
-            default:
-                console.log("Invalid action received");
-                sendResponse({result: 'failure'});
+        if (request.action === "processWebPage") {
+            sendResponse({result: 'success'});
+            processWebPage(detectPageType);
+        } else {
+            console.log("Invalid action received");
+            sendResponse({result: 'failure'});
         }
         return true;
     }

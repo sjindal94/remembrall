@@ -51,16 +51,9 @@
       "run_at": "document_idle"
     }
   ],
-  "web_accessible_resources": [
-    "modal.html",
-    "js/modal.js"
-  ],
   "permissions": [
     "activeTab",
     "storage",
-    "contextMenus",
-    "webRequest",
-    "webRequestBlocking",
     "<all_urls>"
   ]
 }
