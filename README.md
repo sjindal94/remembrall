@@ -20,7 +20,7 @@ Download and install dependencies
 External dependencies:
 * [jQuery](https://jquery.com/)
 * [Pouchdb](https://pouchdb.com/api.html)
-* [pouchdb.find](https://github.com/nolanlawson/pouchdb-find)
+* [pouchdb.quick-search](https://github.com/pouchdb-community/pouchdb-quick-search)
 
 ## Core Logic
 * Detecting Signup Page
@@ -46,7 +46,6 @@ A number of manual tests was performed to make sure the app is working as expect
 * Checked the login detection across majority of the popular websites. (Task 2)
 * Checked manually numerous google search results, to ensure that a warning is shown when a non whitelisted url is clicked. (Task 3) 
 
-NOTE : The performace for Task 3 improves over time, as PouchDB find employes a mapreduce architecture to query the database. While doing performace testing, we observed that the results show up faster after close to a couple dozens of google searches. 
 
 ## Authors
 
