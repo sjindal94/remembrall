@@ -56,30 +56,31 @@ let addToCredentialStore = function (password, url) {
 
 function isPasswordReuse(password, url, formType, callback) {
     console.log("In isPasswordReuse");
-    credentialDb.find({
-        selector: {
-            h_password: {$eq: hashString(password)}
-        }
-    }).then(function (result) {
-        console.log(result.docs);
-        if (result.docs.length !== 0) {
-            if (formType === 'signup') {
-                console.log("Password is being reused");
-                callback("alertUser");
-            } else if (formType === 'login' && result.docs[0].h_url !== hashString(url)) {
-                console.log("Password is being reused");
-                callback("alertUser");
+    console.log("In isPasswordReuse" + password);
+    credentialDb.search({
+            query: hashString(password),
+            fields: ['h_password'],
+            include_docs: true
+        }, function(err, result) {
+            if (err) {
+                console.log(err);
             } else {
-                console.log("It is a new password");
-                callback("noReuse");
+                console.log(result.rows);
+                if(result.total_rows !== 0) {
+                    if (formType === 'signup') {
+                        console.log("Password is being reused");
+                        callback("alertUser");
+                    } else if (formType === 'login' && result.rows[0].doc.h_url !== hashString(url)) {
+                        console.log("Password is being reused");
+                        callback("alertUser");
+                    } else {
+                        console.log("It is a new password");
+                        callback("noReuse");
+                    }
+                }
             }
-        } else {
-            console.log("It is a new password");
-            callback("noReuse");
         }
-    }).catch(function (err) {
-        console.log("ouch, an error", err);
-    });
+    );
 }
 
 let tabListener = function () {

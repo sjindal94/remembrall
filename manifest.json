@@ -21,7 +21,6 @@
       "lib/jquery.min.js",
       "lib/pouchdb-7.0.0.min.js",
       "lib/pbkdf2.js",
-      "lib/pouchdb.find.js",
       "lib/pouchdb.quick-search.min.js",
       "lib/jquery.csv.min.js",
       "js/bg_utils.js",
@@ -38,9 +37,7 @@
       ],
       "js": [
         "lib/jquery.min.js",
-        "lib/pouchdb-7.0.0.min.js",
         "lib/pbkdf2.js",
-        "lib/pouchdb.find.js",
         "js/bg_utils.js",
         "js/credential_store.js",
         "js/content.js"
