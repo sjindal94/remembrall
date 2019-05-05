@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    let getCacheButton = document.getElementById('getCache');
+    /*let getCacheButton = document.getElementById('getCache');
     getCacheButton.addEventListener('click', () => {
         chrome.storage.sync.get(null, function (data) {
             console.info("CURRENT CACHE DATA");
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         chrome.runtime.sendMessage({type: "info_db"}, function (response) {
             console.log(response);
         });
-    });
+    });*/
 
     //Initialize with previous set value
     chrome.storage.sync.get("is_on", function (data) {
