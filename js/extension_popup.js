@@ -5,15 +5,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let switchButton = document.getElementById('switch');
     switchButton.addEventListener('click', () => {
-        console.log("Toggle pressed");
         if (switchButton.checked) {
-            console.log("ON");
             chrome.browserAction.setIcon({path: "icon/remembrallon_128x128.png"});
             IS_ON = true;
         } else {
             chrome.browserAction.setIcon({path: "icon/remembralloff_128x128.png"});
             IS_ON = false;
         }
+        console.log("Toggle is: ", IS_ON);
         chrome.storage.sync.set({"is_on": IS_ON}, function () {
             console.log('Cache Saved', "is_on", IS_ON);
         });

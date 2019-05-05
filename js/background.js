@@ -132,7 +132,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             chrome.tabs.onUpdated.addListener(tabListener);
             sendResponse({result: 'Added to DB'});
             break;
-        case 'create_db':
+        /*case 'create_db':
             createCredentialStore();
             sendResponse({result: 'DB created'});
             break;
@@ -147,7 +147,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         case 'info_db':
             infoDB();
             sendResponse({result: 'DB info fetched'});
-            break;
+            break;*/
         default:
             console.log("Invalid request type received");
             sendResponse({result: 'failure'});
