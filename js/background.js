@@ -6,22 +6,26 @@ let checkIfUrlExists = function (urlSet, callback) {
     let maliciousUrls = [];
     let count = 0;
     for (let i = 0; i < urlSet.length; i++) {
-        webDb.find({
-            selector: {
-                url: {$eq: urlSet[i]}
+        console.log('Searching for : ' + urlSet[i]);
+        webDb.search({
+                query: urlSet[i],
+                fields: ['url']
+            }, function (err, res) {
+                count++;
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(res);
+                    if (res.total_rows === 0) {
+                        maliciousUrls.push(urlSet[i]);
+                    }
+                    if (count === urlSet.length) {
+                        console.log("List of malicious URLS: ", maliciousUrls);
+                        callback(maliciousUrls);
+                    }
+                }
             }
-        }).then(function (result) {
-            count++;
-            if (result.docs.length === 0) {
-                maliciousUrls.push(urlSet[i]);
-            }
-            if (count === urlSet.length) {
-                console.log("List of malicious URLS: ", maliciousUrls);
-                callback(maliciousUrls);
-            }
-        }).catch(function (err) {
-            console.log(err);
-        });
+        );
     }
 
 };
