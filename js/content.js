@@ -179,7 +179,7 @@ let processLinksinPage = function () {
             if (tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }
-        console.log(currentURLs);
+        console.log("Links in the page: ", currentURLs);
         chrome.runtime.sendMessage({
             type: "checkDomainWhitelisting",
             currentURLs: Array.from(currentURLs)

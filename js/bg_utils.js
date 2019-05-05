@@ -5,7 +5,7 @@ function setSalt() {
     console.log("Setting salt");
     chrome.storage.sync.get("salt", function (data) {
         console.log(data);
-        if(data.values === undefined){
+        if (data.values === undefined) {
             $.getJSON("https://api.openweathermap.org/data/2.5/weather?q=London&APPID=f914ac022b86c488ee5274cd00131458", function (json) {
                 console.log(JSON.stringify(json));
                 salt = JSON.stringify(json);

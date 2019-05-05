@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
     createWebStore();
     chrome.storage.sync.get("is_on", function (data) {
         IS_ON = data.is_on;
-        if(IS_ON){
+        if (IS_ON) {
             chrome.browserAction.setIcon({path: "icon/remembrallon_128x128.png"});
         }
     });
