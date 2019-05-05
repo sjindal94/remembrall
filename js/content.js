@@ -171,19 +171,17 @@ let detectPageType = function (formsList) {
 
 let processLinksinPage = function () {
     let urlList = document.getElementsByTagName('a');
-    console.log("In processLinksinPage");
     if (urlList != null && urlList.length > 0) {
         for (let i = 0; i < urlList.length; i++) {
             let tempURL = getDomain(urlList[i].href);
             if (tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }
-        console.log("Links in the page: ", currentURLs);
+        console.log("All Links: ", currentURLs);
         chrome.runtime.sendMessage({
             type: "checkDomainWhitelisting",
             currentURLs: Array.from(currentURLs)
         }, function (maliciousLinks) {
-            console.log("Malicious Links: ", maliciousLinks);
             if (maliciousLinks.length !== 0)
                 addListenerToMalUrls(new Set(maliciousLinks), urlList);
         });
@@ -194,14 +192,11 @@ let processWebPage = function (callback) {
     console.log("In processWebPage");
     processLinksinPage();
     let formsList = document.getElementsByTagName('form');
-    setTimeout(function () {
-        if (formsList.length > 0)
-            callback(formsList);
-    }, 1000);
+    if (formsList.length > 0)
+        callback(formsList);
 };
 
 let shouldWhitelistDomain = function (hostname, href) {
-    console.log('Intercepting onclick for anchor tag');
     let retVal = confirm("Remembrall Warning: Outside of the Alexa top 10K websites.\nAdd this URL permanently to the Web Store?");
     if (retVal === true) {
         console.log("UserInput: add URL to Web Store");
