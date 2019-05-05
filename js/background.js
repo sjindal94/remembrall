@@ -3,7 +3,7 @@ let password, url;
 
 let checkIfUrlExists = function (urlSet, callback) {
     console.log('In checkIfUrlExists');
-    let maliciousLinks = [];
+    let maliciousUrls = [];
     let count = 0;
     for (let i = 0; i < urlSet.length; i++) {
         console.log('Searching for : ' + urlSet[i]);

@@ -182,7 +182,7 @@ let processLinksinPage = function () {
             type: "checkDomainWhitelisting",
             currentURLs: Array.from(currentURLs)
         }, function (maliciousLinks) {
-            if (maliciousLinks.length !== 0)
+            if (maliciousLinks !== 'undefined' && maliciousLinks.length !== 0)
                 addListenerToMalUrls(new Set(maliciousLinks), urlList);
         });
     }
