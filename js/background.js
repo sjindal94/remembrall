@@ -161,4 +161,10 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log("Background loaded");
     createCredentialStore();
     createWebStore();
+    chrome.storage.sync.get("is_on", function (data) {
+        IS_ON = data.is_on;
+        if(IS_ON){
+            chrome.browserAction.setIcon({path: "icon/remembrallon_128x128.png"});
+        }
+    });
 });

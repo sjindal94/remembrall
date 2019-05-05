@@ -1,8 +1,7 @@
 let IS_ON = false;
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Popup loaded");
-    console.log(new Date().toLocaleTimeString());
+    console.log("Popup DOM loaded");
 
     let switchButton = document.getElementById('switch');
     switchButton.addEventListener('click', () => {
@@ -87,14 +86,16 @@ chrome.runtime.onInstalled.addListener(function (details) {
     if (details.reason === "install") {
         console.log("This is a first install!");
         setSalt();
-        chrome.runtime.sendMessage({type: "set_val", data: IS_ON}, function (response) {
-            console.log(response.result);
-        });
     } else if (details.reason === "update") {
         console.log("This is a update!");
         let thisVersion = chrome.runtime.getManifest().version;
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
     }
+    chrome.storage.sync.set({"is_on": false}, function () {
+        console.log('Cache Saved', "is_on", false);
+    });
+    chrome.browserAction.setIcon({path: "icon/remembralloff_128x128.png"});
+    IS_ON = false;
 });
 
 //may delete db onSuspend of runtime
