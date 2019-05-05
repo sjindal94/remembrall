@@ -1,31 +1,0 @@
-March 19 - Apr 30
- Project 1: Security-enhancing browser extension
-
-Tasks: 
-* Detect account creation
-* Get the password from password field
-* Store passwords for websites when creating account
-* Intercept request
-* Compare the new password being typed with the existing stored passwords
-* Warn user for a new password
-* EXTRAS: Update password when changed/ user succesfully logs in with a diff password
-
-
-* Detect login
-* Detect if user is using a previous password to a wrong website, warn
-
-
-* Get list of 10K alexa websites (Goodpages)
-* Get list of links in all pages
-* Warn user for a non goodpage
-* Give button to dismiss once or add the page in goodpages
-
-
-* Have milestones
-* Good GUI
-* Report
-* Uniqueness in project
-
-Tools:
-JQuery
- EXTRAS: Read Research papers for corroboration
