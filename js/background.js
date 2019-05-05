@@ -2,7 +2,7 @@ let IS_ON = false;
 let password, url;
 
 let checkIfUrlExists = function (urlSet, callback) {
-    console.log('In isURLinWebStorePre');
+    console.log('In checkIfUrlExists');
     let maliciousUrls = [];
     let count = 0;
     for (let i = 0; i < urlSet.length; i++) {
@@ -12,13 +12,11 @@ let checkIfUrlExists = function (urlSet, callback) {
             }
         }).then(function (result) {
             count++;
-            console.log(count);
             if (result.docs.length === 0) {
                 maliciousUrls.push(urlSet[i]);
-                console.log(maliciousUrls);
-            } else
-                console.log(url + " exists");
+            }
             if (count === urlSet.length) {
+                console.log("List of malicious URLS: ", maliciousUrls);
                 callback(maliciousUrls);
             }
         }).catch(function (err) {
@@ -37,42 +35,42 @@ let addToWebStore = function (DomainName) {
         "url": DomainName
     };
     writeDocWebDb(doc);
-    readDocWebDb(hashString(DomainName));
 };
 
 
-let addToStore = function (password, url) {
-    console.log("In addToStore");
+let addToCredentialStore = function (password, url) {
+    console.log("In addToCredentialStore");
     let doc = {
         "_id": hashString(password),
         "h_url": hashString(url),
-        "h_password": hashString(password),
-        "url": url,
-        "password": password
+        "h_password": hashString(password)
     };
     writeDoc(doc);
-    console.log("Done addToStore successfully");
-    readAllDocs();
+    console.log("Done addToCredentialStore successfully");
 };
 
 
 function isPasswordReuse(password, url, formType, callback) {
-    console.log("In isPasswordReuse " + password);
+    console.log("In isPasswordReuse");
     credentialDb.find({
         selector: {
-            password: {$eq: password}
+            h_password: {$eq: hashString(password)}
         }
     }).then(function (result) {
         console.log(result.docs);
         if (result.docs.length !== 0) {
-            if (formType === 'signup')
+            if (formType === 'signup') {
+                console.log("Password is being reused");
                 callback("alertUser");
-            else if (formType === 'login' && result.docs[0].url !== url)
+            } else if (formType === 'login' && result.docs[0].h_url !== hashString(url)) {
+                console.log("Password is being reused");
                 callback("alertUser");
-            else {
+            } else {
+                console.log("It is a new password");
                 callback("noReuse");
             }
         } else {
+            console.log("It is a new password");
             callback("noReuse");
         }
     }).catch(function (err) {
@@ -81,8 +79,7 @@ function isPasswordReuse(password, url, formType, callback) {
 }
 
 let tabListener = function () {
-    console.log('Signup success. Now add to store');
-    addToStore(password, url);
+    addToCredentialStore(password, url);
     chrome.tabs.onUpdated.removeListener(tabListener);
 };
 
@@ -92,45 +89,39 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         for (let i = 0; i < allLinks.length; i++) {
             console.log("Link " + i + ": " + allLinks[i].href);
         }
-        console.log("Sending message to Client: ", "processWebPage");
+        console.log("Sending message to Content: processWebPage");
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
             chrome.tabs.sendMessage(tabs[0].id, {action: "processWebPage"}, function (response) {
-                console.log("Response from web content: ", response);
+                console.log("Response: ", response);
             });
         });
     }
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log("Message recieved", request);
+    console.log("Message recieved: ", request);
     switch (request.type) {
         case 'set_val':
             chrome.storage.sync.get("is_on", function (data) {
                 IS_ON = data.is_on;
-                sendResponse({result: 'Backgroung set value to ' + IS_ON});
-                //if(IS_ON) askContent();
+                sendResponse({result: 'Backgroung toggle value: ' + IS_ON});
             });
             break;
         case 'checkDomainWhitelisting':
-            console.log('checkDomainWhitelisting');
             checkIfUrlExists(request.currentURLs, sendResponse);
-            //sendResponse({result: 'success'});
             break;
         case 'whiteListDomain':
-            console.log('whiteListDomain');
             addToWebStore(request.hostname);
             sendResponse({result: 'success'});
             break;
         case 'checkPasswordReuse':
-            console.log('checkPasswordReuse');
             isPasswordReuse(request.password, request.url, request.formType, sendResponse);
             break;
         case 'saveCredentials':
-            console.log('saveCredentials');
             password = request.password;
             url = request.url;
             chrome.tabs.onUpdated.addListener(tabListener);
-            sendResponse({result: 'Added to DB'});
+            sendResponse({result: 'Adding to CredentialStore'});
             break;
         /*case 'create_db':
             createCredentialStore();

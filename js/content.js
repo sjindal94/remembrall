@@ -1,7 +1,6 @@
-//let iframe = null;
 // listen for checkForWord request, call getTags which includes callback to sendResponse
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        console.log("Message received", request);
+        console.log("Message received:", request);
         if (request.action === "processWebPage") {
             sendResponse({result: 'success'});
             processWebPage(detectPageType);
@@ -111,10 +110,10 @@ let detectPageType = function (formsList) {
             containsExtra = false;
         if (method === 'post' || method === 'get') {
             if (regex.test(id) || regex.test(action) || regex.test(name) || regex.test(className)) {
-                console.log("Page contains SIGNUP in id, action, name or classname");
+                console.log("Signup form detected");
                 allForms.push({mForm: form, mFormType: 'signup'});
             } else if (lregex.test(id) || lregex.test(action) || lregex.test(name) || lregex.test(className)) {
-                console.log("Page contains LOGIN in id, action, name or classname");
+                console.log("Login form detected");
                 allForms.push({mForm: form, mFormType: 'login'});
             } else {
                 for (let j = 0, element; element = elements[j++];) {
@@ -123,8 +122,7 @@ let detectPageType = function (formsList) {
                     let className = element.className;
 
                     if (type === "submit" && (regexButton.test(element.innerHTML) || regexButton.test(element.value))) {
-                        console.log("Page contains signup. Button label : " + element.innerHTML);
-                        mForm = form;
+                        console.log("Signup form detected");
                         break;
                     }
                     if (checkEmailElement(type, fieldName, className)) {
@@ -143,10 +141,10 @@ let detectPageType = function (formsList) {
                     }
                 }
                 if (containsEmail && containsPass && (containsExtra || containsSelect)) {
-                    console.log("Signup page detected");
+                    console.log("Signup form detected");
                     allForms.push({mForm: form, mFormType: 'signup'});
                 } else if (containsEmail && containsPass) {
-                    console.log("Login Page detected");
+                    console.log("Login form detected");
                     allForms.push({mForm: form, mFormType: 'login'});
                 }
             }
@@ -157,7 +155,6 @@ let detectPageType = function (formsList) {
         if (allForms[ind].mFormType === 'signup') {
             if (allForms[ind].password_field != null) {
                 $(allForms[ind].mForm).on("submit", function () {
-                    console.log('submitting form');
                     let password = allForms[ind].password_field.value;
                     let url = window.location.hostname;
                     chrome.runtime.sendMessage({
@@ -178,9 +175,7 @@ let processLinksinPage = function () {
     console.log("In processLinksinPage");
     if (urlList != null && urlList.length > 0) {
         for (let i = 0; i < urlList.length; i++) {
-            // console.log("Before getDomain " + urlList[i].href);
             let tempURL = getDomain(urlList[i].href);
-            // console.log("After getDomain " + tempURL)
             if (tempURL != null && tempURL !== "")
                 currentURLs.add(tempURL);
         }

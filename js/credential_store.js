@@ -5,23 +5,17 @@ function initDBForTest() {
     let dbEntry1 = {
         "_id": hashString("password123"),
         "h_url": hashString("www.twilio.com"),
-        "h_password": hashString("password123"),
-        "url": "www.twilio.com",
-        "password": "password123"
+        "h_password": hashString("password123")
     };
     let dbEntry2 = {
         "_id": hashString("password321"),
         "h_url": hashString("www.github.com"),
-        "h_password": hashString("password321"),
-        "url": "www.github.com",
-        "password": "password321"
+        "h_password": hashString("password321")
     };
     let dbEntry3 = {
         "_id": hashString("password"),
         "h_url": hashString("www.facebook.com"),
-        "h_password": hashString("password"),
-        "url": "www.facebook.com",
-        "password": "password"
+        "h_password": hashString("password")
     };
     writeBulkDocs([dbEntry1, dbEntry2, dbEntry3]);
 }
