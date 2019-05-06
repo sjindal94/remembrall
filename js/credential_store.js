@@ -1,7 +1,8 @@
 let credentialDb = null;
 
 function initDBForTest() {
-    console.log("Initializing DB");
+    console.log("Initializing DB for testing");
+    /*Just for testing purpose*/
     let dbEntry1 = {
         "_id": hashString("password123"),
         "h_url": hashString("www.twilio.com"),
@@ -18,6 +19,23 @@ function initDBForTest() {
         "h_password": hashString("password")
     };
     writeBulkDocs([dbEntry1, dbEntry2, dbEntry3]);
+}
+
+function createCredentialStore() {
+    credentialDb = new PouchDB('credential_store');
+    initDBForTest();
+}
+
+function writeDoc(doc) {
+    if (credentialDb == null) console.log("DB Does not exist");
+    else credentialDb.put(doc, function (err, response) {
+        if (err) {
+            return console.log(err);
+        } else {
+            console.log(response);
+            console.log("Document created Successfully");
+        }
+    });
 }
 
 function writeBulkDocs(docs) {
@@ -52,18 +70,6 @@ function infoDB() {
     })
 }
 
-function writeDoc(doc) {
-    if (credentialDb == null) console.log("DB Does not exist");
-    else credentialDb.put(doc, function (err, response) {
-        if (err) {
-            return console.log(err);
-        } else {
-            console.log(response);
-            console.log("Document created Successfully");
-        }
-    });
-}
-
 function removeDoc(_id, _rev) {
     //Deleting an existing document
     if (credentialDb == null) console.log("DB Does not exist");
@@ -89,13 +95,7 @@ function readAllDocs() {
     });
 }
 
-function createCredentialStore() {
-    credentialDb = new PouchDB('credential_store');
-    initDBForTest();
-}
-
 function destroyDB() {
-    //deleting database
     if (credentialDb == null) console.log("DB Does not exist");
     else credentialDb.destroy(function (err, response) {
         if (err) {
