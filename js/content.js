@@ -66,7 +66,7 @@ let monitorForm = function (allForms) {
                             if (allForms[currentFormIndex].mFormType === 'signup') {
                                 alert("Remembrall : Already in Use! Choose a different password");
                             } else {
-                                alert("Remembrall : Input password belongs to some other website.\n Possible phishing attack!");
+                                alert("Remembrall : Input password belongs to some other website.\n This might be phishing attack.");
                             }
                             $(allForms[currentFormIndex].password_field).val("");
                             $(allForms[currentFormIndex].password_field).focus();
