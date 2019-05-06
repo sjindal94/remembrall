@@ -107,15 +107,3 @@ function destroyDB() {
         }
     });
 }
-
-/*
-Incase we save address, contact cards , secret files images etc
-//Adding attachment to a document
-db.putAttachment('001', 'att_1.txt', my_attachment, 'text/plain', function(err, res) {
-   if (err) {
-      return console.log(err);
-   } else {
-      console.log(res+"Attachment added successfully")
-   }
-});
- */

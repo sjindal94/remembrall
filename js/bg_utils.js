@@ -57,9 +57,3 @@ function getHostName(taburl) {
         return null;
     }
 }
-
-
-/*if ((hostName.toLowerCase().indexOf('.co.uk') != -1 && parts.length > 2) ||
-(hostName.toLowerCase().indexOf('.co.in') != -1 && parts.length > 2)) {
-  domain = parts[2] + '.' + domain;
-} */

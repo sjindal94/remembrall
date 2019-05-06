@@ -96,5 +96,3 @@ chrome.runtime.onInstalled.addListener(function (details) {
     chrome.browserAction.setIcon({path: "icon/remembralloff_128x128.png"});
     IS_ON = false;
 });
-
-//may delete db onSuspend of runtime
