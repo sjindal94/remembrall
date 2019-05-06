@@ -24,16 +24,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
  *                  atleast 1 buttom type = 'submit'
  *              and atleast 1 other non hidden input type with name in
  *                  ['first name', 'mobile number', 'phone number', 'last name', 'name', 'gender', 'dob', 'birth', 'date']
- *
- * Does not work for :
- *      - Instacart
- *      - Apple
  */
 
-let extraStrings = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
+let extraStrings  = ['name', 'gender', 'sex', 'number', 'age', 'birthday'],
     signupStrings = ['signup', 'create account', 'register', 'sign up'],
     buttonStrings = ['signup', 'create account', 'register', 'sign up', 'join'],
-    loginStrings = ['login', 'log in'];
+    loginStrings  = ['login', 'log in'];
 
 let regexExt = new RegExp(extraStrings.join("|"), "i"),
     regex = new RegExp(signupStrings.join("|"), "i"),
