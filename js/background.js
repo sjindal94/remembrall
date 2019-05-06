@@ -57,7 +57,6 @@ let addToCredentialStore = function (password, url) {
 
 function isPasswordReuse(password, url, formType, callback) {
     console.log("In isPasswordReuse");
-    console.log("In isPasswordReuse" + password);
     credentialDb.search({
             query: hashString(password),
             fields: ['h_password'],
